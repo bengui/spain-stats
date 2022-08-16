@@ -28,7 +28,7 @@ interface IneService {
     @GET("{language}/$DATA_METADATA/{operation}")
     suspend fun getDataByGeographicLocation(
         @Path("language") language: Language = Language.ES,
-        @Path("operation") operation: String,
+        @Path("operation") operation: Int,
         @Query("g1") locationIdentifier: String,
         @Query("tip") type: Type = Type.M,
         @Query("nult") dataSeries: Int = 1,

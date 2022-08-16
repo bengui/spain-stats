@@ -5,6 +5,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 const val DATA_METADATA = "DATOS_METADATAOPERACION"
+const val VARIABLE_VALUES = "VALORES_VARIABLE"
 
 enum class Language {
     ES, EN
@@ -25,12 +26,20 @@ interface IneService {
 
     // https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353?p=12&g1=19:&nult=3&page=1
     @GET("{language}/$DATA_METADATA/{operation}")
-    fun getDataByGeographicLocation(
-        @Path("operation") language: Language = Language.ES,
+    suspend fun getDataByGeographicLocation(
+        @Path("language") language: Language = Language.ES,
         @Path("operation") operation: String,
         @Query("g1") locationIdentifier: String,
         @Query("tip") type: Type = Type.M,
         @Query("nult") dataSeries: Int = 1,
         @Query("p") pValue: Int = 12
-    )
+    ): List<DataEntryDto>
+
+
+    //https://servicios.ine.es/wstempus/js/ES/VALORES_VARIABLE/8
+    @GET("{language}/$VARIABLE_VALUES/{variableId}")
+    suspend fun getVariableValues(
+        @Path("operation") language: Language = Language.ES,
+        @Path("variableId") variableId: Int
+    ): List<VariableValueDto>
 }

@@ -3,24 +3,21 @@ package me.benguiman.spainstats
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import me.benguiman.spainstats.ui.MunicipalityStatsViewModel
-import me.benguiman.spainstats.ui.ProvinceMunicipalityListItemUiState
+import me.benguiman.spainstats.ui.home.HomeScreen
+import me.benguiman.spainstats.ui.municipality.MunicipalityScreen
 import me.benguiman.spainstats.ui.theme.SpainStatsTheme
 
 @AndroidEntryPoint
@@ -36,51 +33,61 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun StatsApp(
-    viewModel: MunicipalityStatsViewModel = viewModel()
+    navHostController: NavHostController = rememberNavController()
 ) {
-    val municipalityStatsUiState by viewModel.municipalityStatsUiState.collectAsState()
     SpainStatsTheme {
         // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background,
         ) {
-            if (municipalityStatsUiState.errorMessage.isEmpty()) {
-                ProvinceMunicipalityList(provinceMunicipalityList = municipalityStatsUiState.provinceMunicipalityList)
-            } else {
-                Text(text = municipalityStatsUiState.errorMessage)
-            }
+            StatsNavHos(navHostController = navHostController)
         }
     }
 }
 
 @Composable
-fun ProvinceMunicipalityList(
-    provinceMunicipalityList: List<ProvinceMunicipalityListItemUiState>,
+fun StatsNavHos(
+    navHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
-        items(provinceMunicipalityList) {
-            if (it.title) {
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            Text(
-                text = it.name,
-                style = if (it.title) MaterialTheme.typography.titleLarge else MaterialTheme.typography.bodyMedium
-            )
+    NavHost(
+        navController = navHostController,
+        startDestination = Home.route,
+        modifier = modifier
+    ) {
+        composable(route = Home.route) {
+            val viewModel = hiltViewModel<MunicipalityStatsViewModel>()
+            HomeScreen(
+                viewModel = viewModel,
+                onMunicipalityClickListener = { id ->
+                    navHostController.navigateToMunicipality(id)
+                })
+        }
+        composable(
+            route = Municipality.routeWithArgs,
+            arguments = Municipality.arguments
+        ) { navBackStackEntry ->
+            val municipalityId =
+                navBackStackEntry
+                    .arguments
+                    ?.getInt(Municipality.municipalityIdArg) ?: -1
+            val viewModel = hiltViewModel<MunicipalityStatsViewModel>()
+            viewModel.getMunicipalityStats(municipalityId)
+            MunicipalityScreen()
         }
     }
 }
 
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
+private fun NavHostController.navigateToMunicipality(id: Int) =
+    this.navigateSingleTop("${Municipality.route}/$id")
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    SpainStatsTheme {
-        Greeting("Android")
+
+fun NavHostController.navigateSingleTop(route: String) =
+    this.navigate(route) {
+        popUpTo(this@navigateSingleTop.graph.findStartDestination().id) {
+            saveState = true
+        }
+        launchSingleTop = true
+        restoreState = true
     }
-}

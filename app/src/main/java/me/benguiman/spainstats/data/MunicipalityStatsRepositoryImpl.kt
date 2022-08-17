@@ -10,11 +10,11 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
     private val ineService: IneService,
     @IoDispatcher private val coroutineDispatcher: CoroutineDispatcher
 ) : MunicipalityStatsRepository {
-    override suspend fun getAdrhData(municipality: Municipality) {
+    override suspend fun getAdrhData(municipalityId: Int) {
         return withContext(coroutineDispatcher) {
             ineService.getDataByGeographicLocation(
                 operation = AdrhOperation.KEY,
-                locationIdentifier = municipality.getLocationIdentifier()
+                locationIdentifier = getLocationIdentifier(municipalityId)
             ).filterByOperation(
                 PercentageOfPopulationOf65OrMore,
                 PercentageOfPopulationYoungerThan18,
@@ -34,7 +34,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun Municipality.getLocationIdentifier() =
+    private fun getLocationIdentifier(id : Int) =
         "$MUNICIPALITY_VARIABLE_KEY:${id}"
 }
 

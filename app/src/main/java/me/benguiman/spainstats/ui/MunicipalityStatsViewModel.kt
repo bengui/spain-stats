@@ -9,20 +9,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.benguiman.spainstats.domain.GetAdrhForMunicipality
 import me.benguiman.spainstats.domain.GetProvincesAndMunicipalitiesUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class MunicipalityStatsViewModel @Inject constructor(
-    private val getProvincesAndMunicipalitiesUseCase: GetProvincesAndMunicipalitiesUseCase
+    private val getProvincesAndMunicipalitiesUseCase: GetProvincesAndMunicipalitiesUseCase,
+    private val getAdrhForMunicipality: GetAdrhForMunicipality
 ) : ViewModel() {
 
     companion object {
         const val TAG = "MunicipalityStatsViewModel"
     }
 
-    private val _municipalityStatsUiState: MutableStateFlow<MunicipalityStatsUiState> =
-        MutableStateFlow(MunicipalityStatsUiState())
+    private val _municipalityStatsUiState: MutableStateFlow<MunicipalityHomeUiState> =
+        MutableStateFlow(MunicipalityHomeUiState())
 
     val municipalityStatsUiState
         get() = _municipalityStatsUiState.asStateFlow()
@@ -40,12 +42,13 @@ class MunicipalityStatsViewModel @Inject constructor(
             try {
                 val provinceList = getProvincesAndMunicipalitiesUseCase()
                 val items = provinceList.fold(
-                    mutableListOf<ProvinceMunicipalityListItemUiState>()
+                    mutableListOf<ProvinceMunicipalityListItem>()
                 ) { acc, province ->
-                    acc.add(ProvinceMunicipalityListItemUiState(province.name, true))
+                    acc.add(ProvinceMunicipalityListItem(name = province.name, title = true))
                     acc.addAll(province.municipalityList.map {
-                        ProvinceMunicipalityListItemUiState(
-                            it.name
+                        ProvinceMunicipalityListItem(
+                            id = it.id,
+                            name = it.name
                         )
                     })
                     acc
@@ -59,6 +62,19 @@ class MunicipalityStatsViewModel @Inject constructor(
                 _municipalityStatsUiState.update {
                     it.copy(errorMessage = "Error retrieving Municipality")
                 }
+            }
+        }
+    }
+
+    private var getMunicipalityStatsJob: Job? = null
+
+    fun getMunicipalityStats(id: Int) {
+        getMunicipalityStatsJob?.cancel()
+        getMunicipalityStatsJob = viewModelScope.launch {
+            try {
+                getAdrhForMunicipality(id)
+            } catch (e: Exception) {
+
             }
         }
     }

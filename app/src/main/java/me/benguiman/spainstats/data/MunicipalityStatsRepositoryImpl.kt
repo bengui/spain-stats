@@ -16,12 +16,6 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             ineService.getDataByGeographicLocation(
                 operation = AdrhOperation.KEY,
                 locationIdentifier = getLocationIdentifier(municipalityId)
-            ).filterByOperation(
-                PercentageOfPopulationOf65OrMore,
-                PercentageOfPopulationYoungerThan18,
-                AverageGrossHomeIncome,
-                AverageGrossPersonIncome,
-                AveragePopulationAge
             ).filter {
                 it.dataDto.isNotEmpty() &&
                         it.dataDto.all { dataDto -> dataDto.value != null }
@@ -31,6 +25,13 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
                     value = it.dataDto.first().value!!
                 )
             }
+//                .filterByOperation(
+//                    PercentageOfPopulationOf65OrMore,
+//                    PercentageOfPopulationYoungerThan18,
+//                    AverageGrossHomeIncome,
+//                    AverageGrossPersonIncome,
+//                    AveragePopulationAge
+//                )
         }
     }
 

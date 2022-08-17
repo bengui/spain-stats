@@ -73,8 +73,10 @@ fun StatsNavHos(
                     .arguments
                     ?.getInt(Municipality.municipalityIdArg) ?: -1
             val viewModel = hiltViewModel<MunicipalityStatsViewModel>()
-            viewModel.getMunicipalityStats(municipalityId)
-            MunicipalityScreen(viewModel = viewModel)
+            MunicipalityScreen(
+                viewModel = viewModel,
+                municipalityId = municipalityId
+            )
         }
     }
 }

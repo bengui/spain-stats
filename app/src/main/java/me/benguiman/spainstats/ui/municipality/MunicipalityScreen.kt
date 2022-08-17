@@ -7,20 +7,27 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import me.benguiman.spainstats.ui.MunicipalityStatsViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.benguiman.spainstats.MunicipalityStat
+import me.benguiman.spainstats.ui.MunicipalityStatUiState
+import me.benguiman.spainstats.ui.MunicipalityStatsViewModel
 
 @Composable
 fun MunicipalityScreen(
     viewModel: MunicipalityStatsViewModel = viewModel(),
+    municipalityId: Int,
     modifier: Modifier = Modifier
 ) {
-    val municipalityStatUiState by viewModel.municipalityStatUiState.collectAsState()
+    val municipalityStatUiState by produceState(
+        key1 = municipalityId,
+        initialValue = MunicipalityStatUiState(loading = true),
+    ) {
+        value = viewModel.getMunicipalityStats(municipalityId)
+    }
 
     if (municipalityStatUiState.loading) {
         Text("Loading...")

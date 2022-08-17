@@ -35,7 +35,7 @@ class MunicipalityStatsViewModel @Inject constructor(
         getProvincesAndMunicipalities()
     }
 
-    fun getProvincesAndMunicipalities() {
+    private fun getProvincesAndMunicipalities() {
         getProvincesAndMunicipalitiesJob?.cancel()
 
         getProvincesAndMunicipalitiesJob = viewModelScope.launch {
@@ -66,41 +66,23 @@ class MunicipalityStatsViewModel @Inject constructor(
         }
     }
 
-    private var getMunicipalityStatsJob: Job? = null
-    private val _municipalityStatUiState = MutableStateFlow(MunicipalityStatUiState())
 
-    val municipalityStatUiState
-        get() = _municipalityStatUiState.asStateFlow()
+    suspend fun getMunicipalityStats(id: Int): MunicipalityStatUiState {
+        Log.d(TAG, "getMunicipalityStats $id")
 
-    fun getMunicipalityStats(id: Int) {
-//        getMunicipalityStatsJob?.cancel()
-        _municipalityStatUiState.update {
-            it.copy(
+        return try {
+            val municipalityStatList = getAdrhForMunicipality(id)
+            MunicipalityStatUiState(
                 loading = false,
+                municipalityStatList = municipalityStatList
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, e.message ?: e.toString())
+            MunicipalityStatUiState(
+                loading = false,
+                errorMessage = "Error retrieving Municipality Stats"
+            )
+        }
 
-                )
-        }
-        getMunicipalityStatsJob = viewModelScope.launch {
-            try {
-                _municipalityStatUiState.update {
-                    it.copy(loading = true)
-                }
-                val municipalityStatList = getAdrhForMunicipality(id)
-                _municipalityStatUiState.update {
-                    it.copy(
-                        loading = false,
-                        municipalityStatList = municipalityStatList
-                    )
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, e.message ?: e.toString())
-                _municipalityStatUiState.update {
-                    it.copy(
-                        loading = false,
-                        errorMessage = "Error retrieving Municipality Stats"
-                    )
-                }
-            }
-        }
     }
 }

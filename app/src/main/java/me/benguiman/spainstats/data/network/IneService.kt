@@ -39,7 +39,7 @@ interface IneService {
     //https://servicios.ine.es/wstempus/js/ES/VALORES_VARIABLE/8
     @GET("{language}/$VARIABLE_VALUES/{variableId}")
     suspend fun getVariableValues(
-        @Path("operation") language: Language = Language.ES,
+        @Path("language") language: Language = Language.ES,
         @Path("variableId") variableId: Int
     ): List<VariableValueDto>
 }

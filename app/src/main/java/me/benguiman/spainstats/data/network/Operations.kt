@@ -1,7 +1,6 @@
 package me.benguiman.spainstats.data.network
 
 interface Operation {
-    val key: Int
     val seriesCode: String
 }
 
@@ -9,8 +8,6 @@ abstract class AdrhOperation : Operation {
     companion object {
         const val KEY = 353
     }
-
-    override val key: Int = KEY
 }
 
 object PercentageOfPopulationOf65OrMore : AdrhOperation() {

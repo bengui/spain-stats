@@ -16,11 +16,12 @@ fun transformVariableValueIntoProvince(variableList: List<VariableValueDto>): Li
         Province(
             id = it.id,
             name = it.name,
-            code = it.code
+            code = it.code,
+            municipalityList = emptyList()
         )
     }
 
-fun transformVariableValueIntoCity(variableList: List<VariableValueDto>): List<Municipality> =
+fun transformVariableValueIntoMunicipality(variableList: List<VariableValueDto>): List<Municipality> =
     variableList.map {
         Municipality(
             id = it.id,
@@ -28,3 +29,27 @@ fun transformVariableValueIntoCity(variableList: List<VariableValueDto>): List<M
             code = it.code
         )
     }
+
+fun transformVariableValueIntoProvinceWithMunicipality(
+    provinceVariableList: List<VariableValueDto>,
+    municipalityVariableList: List<VariableValueDto>
+): List<Province> =
+    provinceVariableList.map {
+        Province(
+            id = it.id,
+            name = it.name,
+            code = it.code,
+            municipalityList = transformVariableValueIntoMunicipality(
+                filterMunicipalitiesFromProvince(
+                    it.code,
+                    municipalityVariableList
+                )
+            )
+        )
+    }
+
+fun filterMunicipalitiesFromProvince(
+    provinceCode: String,
+    municipalityList: List<VariableValueDto>
+) =
+    municipalityList.filter { it.code.startsWith(provinceCode) }

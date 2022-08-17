@@ -7,6 +7,8 @@ interface LocationsRepository {
     suspend fun getProvinceList(): List<Province>
 
     suspend fun getMunicipalityList(province: Province): List<Municipality>
+
+    suspend fun getProvinceListPopulatedWithMunicipalities(): List<Province>
 }
 
 data class Municipality(
@@ -18,7 +20,8 @@ data class Municipality(
 data class Province(
     val id: Int,
     val name: String,
-    val code: String
+    val code: String,
+    val municipalityList: List<Municipality>
 )
 
 data class AutonomousCommunity(

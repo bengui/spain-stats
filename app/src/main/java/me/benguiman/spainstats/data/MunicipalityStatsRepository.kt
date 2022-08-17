@@ -1,6 +1,6 @@
 package me.benguiman.spainstats.data
 
-interface StatsRepository {
+interface MunicipalityStatsRepository {
 
     suspend fun getAdrhData(municipality: Municipality)
 }

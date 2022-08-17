@@ -6,10 +6,10 @@ import me.benguiman.spainstats.data.network.*
 import me.benguiman.spainstats.di.IoDispatcher
 import javax.inject.Inject
 
-class StatsRepositoryImpl @Inject constructor(
+class MunicipalityStatsRepositoryImpl @Inject constructor(
     private val ineService: IneService,
     @IoDispatcher private val coroutineDispatcher: CoroutineDispatcher
-) : StatsRepository {
+) : MunicipalityStatsRepository {
     override suspend fun getAdrhData(municipality: Municipality) {
         return withContext(coroutineDispatcher) {
             ineService.getDataByGeographicLocation(

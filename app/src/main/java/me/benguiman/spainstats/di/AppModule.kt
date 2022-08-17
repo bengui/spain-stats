@@ -21,6 +21,4 @@ object AppModule {
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(IneService::class.java)
-
-
 }

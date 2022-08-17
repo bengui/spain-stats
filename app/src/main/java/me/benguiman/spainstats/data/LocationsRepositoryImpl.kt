@@ -3,6 +3,7 @@ package me.benguiman.spainstats.data
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.benguiman.spainstats.data.network.IneService
+import me.benguiman.spainstats.data.network.VariableValueDto
 import me.benguiman.spainstats.di.IoDispatcher
 import javax.inject.Inject
 
@@ -30,8 +31,8 @@ class LocationsRepositoryImpl @Inject constructor(
         return withContext(coroutineDispatcher) {
             transformVariableValueIntoMunicipality(
                 filterMunicipalitiesFromProvince(
-                    province.code,
-                    ineService.getVariableValues(variableId = MUNICIPALITY_VARIABLE_KEY)
+                    provinceCode = province.code,
+                    municipalityList = getMunicipalityVariableList()
                 )
             )
         }
@@ -39,14 +40,23 @@ class LocationsRepositoryImpl @Inject constructor(
 
     override suspend fun getProvinceListPopulatedWithMunicipalities(): List<Province> {
         return withContext(coroutineDispatcher) {
-
-            val municipalityVariableList =
-                ineService.getVariableValues(variableId = MUNICIPALITY_VARIABLE_KEY)
-            val provinceVariableList = ineService.getVariableValues(variableId = PROVINCE_VARIABLE_KEY)
             transformVariableValueIntoProvinceWithMunicipality(
-                provinceVariableList,
-                municipalityVariableList
+                provinceVariableList = getProvinceVariableList(),
+                municipalityVariableList = getMunicipalityVariableList()
             )
+        }
+    }
+
+    private suspend fun getProvinceVariableList() =
+        filterNonValidProvinces(ineService.getVariableValues(variableId = PROVINCE_VARIABLE_KEY))
+
+    private suspend fun getMunicipalityVariableList() =
+        ineService.getVariableValues(variableId = MUNICIPALITY_VARIABLE_KEY)
+
+    private fun filterNonValidProvinces(provinceList: List<VariableValueDto>): List<VariableValueDto> {
+        return provinceList.filter {
+            val trimmedCode = it.code.replace("0", "")
+            trimmedCode.isNotEmpty()
         }
     }
 }

@@ -22,10 +22,13 @@ fun HomeScreen(
     onMunicipalityClickListener: (Int) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val municipalityStatsUiState by viewModel.municipalityStatsUiState.collectAsState()
+    val municipalityStatsUiState by viewModel.municipalityHomeUiState.collectAsState()
 
     if (municipalityStatsUiState.errorMessage.isEmpty()) {
-        ProvinceMunicipalityList(provinceMunicipalityList = municipalityStatsUiState.provinceMunicipalityList)
+        ProvinceMunicipalityList(
+            provinceMunicipalityList = municipalityStatsUiState.provinceMunicipalityList,
+            onMunicipalityClickListener = onMunicipalityClickListener
+        )
     } else {
         Text(text = municipalityStatsUiState.errorMessage)
     }

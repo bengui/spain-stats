@@ -7,8 +7,8 @@ import com.squareup.moshi.JsonClass
 data class DataEntryDto(
     @field:Json(name = "COD") val code: String,
     @field:Json(name = "Nombre") val name: String,
-    @field:Json(name = "MetaData") val metadata: MetadataDto,
-    @field:Json(name = "Data") val dataDto: DataDto
+    @field:Json(name = "MetaData") val metadata: List<MetadataDto>,
+    @field:Json(name = "Data") val dataDto: List<DataDto>
 )
 
 @JsonClass(generateAdapter = true)
@@ -30,7 +30,7 @@ data class VariableDto(
 data class DataDto(
     @field:Json(name = "Fecha") val date: Long,
     @field:Json(name = "Anyo") val year: Int,
-    @field:Json(name = "Valor") val value: Double,
+    @field:Json(name = "Valor") val value: Double?,
 )
 
 @JsonClass(generateAdapter = true)

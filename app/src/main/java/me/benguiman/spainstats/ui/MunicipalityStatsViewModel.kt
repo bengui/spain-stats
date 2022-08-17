@@ -23,11 +23,11 @@ class MunicipalityStatsViewModel @Inject constructor(
         const val TAG = "MunicipalityStatsViewModel"
     }
 
-    private val _municipalityStatsUiState: MutableStateFlow<MunicipalityHomeUiState> =
+    private val _municipalityHomeUiState: MutableStateFlow<MunicipalityHomeUiState> =
         MutableStateFlow(MunicipalityHomeUiState())
 
-    val municipalityStatsUiState
-        get() = _municipalityStatsUiState.asStateFlow()
+    val municipalityHomeUiState
+        get() = _municipalityHomeUiState.asStateFlow()
 
     private var getProvincesAndMunicipalitiesJob: Job? = null
 
@@ -54,12 +54,12 @@ class MunicipalityStatsViewModel @Inject constructor(
                     acc
                 }
 
-                _municipalityStatsUiState.update {
+                _municipalityHomeUiState.update {
                     it.copy(provinceMunicipalityList = items)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: e.toString())
-                _municipalityStatsUiState.update {
+                _municipalityHomeUiState.update {
                     it.copy(errorMessage = "Error retrieving Municipality")
                 }
             }
@@ -67,14 +67,39 @@ class MunicipalityStatsViewModel @Inject constructor(
     }
 
     private var getMunicipalityStatsJob: Job? = null
+    private val _municipalityStatUiState = MutableStateFlow(MunicipalityStatUiState())
+
+    val municipalityStatUiState
+        get() = _municipalityStatUiState.asStateFlow()
 
     fun getMunicipalityStats(id: Int) {
-        getMunicipalityStatsJob?.cancel()
+//        getMunicipalityStatsJob?.cancel()
+        _municipalityStatUiState.update {
+            it.copy(
+                loading = false,
+
+                )
+        }
         getMunicipalityStatsJob = viewModelScope.launch {
             try {
-                getAdrhForMunicipality(id)
+                _municipalityStatUiState.update {
+                    it.copy(loading = true)
+                }
+                val municipalityStatList = getAdrhForMunicipality(id)
+                _municipalityStatUiState.update {
+                    it.copy(
+                        loading = false,
+                        municipalityStatList = municipalityStatList
+                    )
+                }
             } catch (e: Exception) {
-
+                Log.e(TAG, e.message ?: e.toString())
+                _municipalityStatUiState.update {
+                    it.copy(
+                        loading = false,
+                        errorMessage = "Error retrieving Municipality Stats"
+                    )
+                }
             }
         }
     }

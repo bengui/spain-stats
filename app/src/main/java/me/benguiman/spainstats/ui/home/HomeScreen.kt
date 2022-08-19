@@ -24,13 +24,15 @@ fun HomeScreen(
 ) {
     val municipalityStatsUiState by viewModel.municipalityHomeUiState.collectAsState()
 
-    if (municipalityStatsUiState.errorMessage.isEmpty()) {
+    if (municipalityStatsUiState.errorMessage.isNotEmpty()) {
+        Text(text = municipalityStatsUiState.errorMessage)
+    } else if (municipalityStatsUiState.loading) {
+        Text(text = "Loading...")
+    } else {
         ProvinceMunicipalityList(
             provinceMunicipalityList = municipalityStatsUiState.provinceMunicipalityList,
             onMunicipalityClickListener = onMunicipalityClickListener
         )
-    } else {
-        Text(text = municipalityStatsUiState.errorMessage)
     }
 
 }

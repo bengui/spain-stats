@@ -4,10 +4,6 @@ interface LocationsRepository {
 
     suspend fun getAutonomousCommunityList(): List<AutonomousCommunity>
 
-    suspend fun getProvinceList(): List<Province>
-
-    suspend fun getMunicipalityList(province: Province): List<Municipality>
-
     suspend fun getProvinceListPopulatedWithMunicipalities(): List<Province>
 }
 

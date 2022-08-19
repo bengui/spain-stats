@@ -24,6 +24,10 @@ enum class Type {
 
 interface IneService {
 
+    companion object {
+        const val MUNICIPALITY_RESPONSE_TOTAL_PAGES = 17
+    }
+
     // https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353?p=12&g1=19:&nult=3&page=1
     @GET("{language}/$DATA_METADATA/{operation}")
     suspend fun getDataByOperationFilterByVariable(
@@ -40,6 +44,7 @@ interface IneService {
     @GET("{language}/$VARIABLE_VALUES/{variableId}")
     suspend fun getVariableValues(
         @Path("language") language: Language = Language.ES,
-        @Path("variableId") variableId: Int
+        @Path("variableId") variableId: Int,
+        @Query("page") page : Int = 1
     ): List<VariableValueDto>
 }

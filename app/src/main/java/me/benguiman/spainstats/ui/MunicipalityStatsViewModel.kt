@@ -40,6 +40,10 @@ class MunicipalityStatsViewModel @Inject constructor(
 
         getProvincesAndMunicipalitiesJob = viewModelScope.launch {
             try {
+                _municipalityHomeUiState.update {
+                    MunicipalityHomeUiState(loading = true)
+                }
+
                 val provinceList = getProvincesAndMunicipalitiesUseCase()
                 val items = provinceList.fold(
                     mutableListOf<ProvinceMunicipalityListItem>()
@@ -55,12 +59,12 @@ class MunicipalityStatsViewModel @Inject constructor(
                 }
 
                 _municipalityHomeUiState.update {
-                    it.copy(provinceMunicipalityList = items)
+                    MunicipalityHomeUiState(provinceMunicipalityList = items)
                 }
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: e.toString())
                 _municipalityHomeUiState.update {
-                    it.copy(errorMessage = "Error retrieving Municipality")
+                    MunicipalityHomeUiState(errorMessage = "Error retrieving Municipality")
                 }
             }
         }

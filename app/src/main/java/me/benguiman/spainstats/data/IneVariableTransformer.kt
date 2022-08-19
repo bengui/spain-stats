@@ -11,16 +11,6 @@ fun transformVariableValueIntoAutonomousCommunity(variableList: List<VariableVal
         )
     }
 
-fun transformVariableValueIntoProvince(variableList: List<VariableValueDto>): List<Province> =
-    variableList.map {
-        Province(
-            id = it.id,
-            name = it.name,
-            code = it.code,
-            municipalityList = emptyList()
-        )
-    }
-
 fun transformVariableValueIntoMunicipality(variableList: List<VariableValueDto>): List<Municipality> =
     variableList.map {
         Municipality(
@@ -34,22 +24,27 @@ fun transformVariableValueIntoProvinceWithMunicipality(
     provinceVariableList: List<VariableValueDto>,
     municipalityVariableList: List<VariableValueDto>
 ): List<Province> =
-    provinceVariableList.map {
-        Province(
-            id = it.id,
-            name = it.name,
-            code = it.code,
-            municipalityList = transformVariableValueIntoMunicipality(
-                filterMunicipalitiesFromProvince(
-                    it.code,
-                    municipalityVariableList
+    provinceVariableList
+        .sortedByName()
+        .map {
+            Province(
+                id = it.id,
+                name = it.name,
+                code = it.code,
+                municipalityList = transformVariableValueIntoMunicipality(
+                    filterMunicipalitiesFromProvince(
+                        it.code,
+                        municipalityVariableList
+                    ).sortedByName()
                 )
             )
-        )
-    }
+        }
 
 fun filterMunicipalitiesFromProvince(
     provinceCode: String,
     municipalityList: List<VariableValueDto>
 ) =
     municipalityList.filter { it.code.startsWith(provinceCode) }
+
+private fun List<VariableValueDto>.sortedByName() =
+    this.sortedBy { it.name }

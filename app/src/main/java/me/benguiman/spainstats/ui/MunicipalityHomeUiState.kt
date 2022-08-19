@@ -2,7 +2,8 @@ package me.benguiman.spainstats.ui
 
 data class MunicipalityHomeUiState(
     val provinceMunicipalityList: List<ProvinceMunicipalityListItem> = emptyList(),
-    val errorMessage: String = ""
+    val errorMessage: String = "",
+    val loading : Boolean = false,
 )
 
 data class ProvinceMunicipalityListItem(

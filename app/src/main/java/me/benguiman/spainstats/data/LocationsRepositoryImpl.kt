@@ -1,8 +1,11 @@
 package me.benguiman.spainstats.data
 
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import me.benguiman.spainstats.data.network.IneService
+import me.benguiman.spainstats.data.network.IneService.Companion.MUNICIPALITY_RESPONSE_TOTAL_PAGES
 import me.benguiman.spainstats.data.network.VariableValueDto
 import me.benguiman.spainstats.di.IoDispatcher
 import javax.inject.Inject
@@ -11,6 +14,11 @@ class LocationsRepositoryImpl @Inject constructor(
     private val ineService: IneService,
     @IoDispatcher private val coroutineDispatcher: CoroutineDispatcher
 ) : LocationsRepository {
+
+    private var provinceWithMunicipalitiesList: List<Province>? = null
+
+    private val mutex = Mutex()
+
     override suspend fun getAutonomousCommunityList(): List<AutonomousCommunity> {
         return withContext(coroutineDispatcher) {
             transformVariableValueIntoAutonomousCommunity(
@@ -19,39 +27,44 @@ class LocationsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getProvinceList(): List<Province> {
-        return withContext(coroutineDispatcher) {
-            transformVariableValueIntoProvince(
-                ineService.getVariableValues(variableId = PROVINCE_VARIABLE_KEY)
-            )
-        }
-    }
-
-    override suspend fun getMunicipalityList(province: Province): List<Municipality> {
-        return withContext(coroutineDispatcher) {
-            transformVariableValueIntoMunicipality(
-                filterMunicipalitiesFromProvince(
-                    provinceCode = province.code,
-                    municipalityList = getMunicipalityVariableList()
-                )
-            )
-        }
-    }
-
     override suspend fun getProvinceListPopulatedWithMunicipalities(): List<Province> {
+        provinceWithMunicipalitiesList?.let {
+            return it
+        }
+
         return withContext(coroutineDispatcher) {
-            transformVariableValueIntoProvinceWithMunicipality(
-                provinceVariableList = getProvinceVariableList(),
-                municipalityVariableList = getMunicipalityVariableList()
-            )
+            mutex.withLock {
+
+                provinceWithMunicipalitiesList?.let {
+                    return@withContext it
+                }
+
+                provinceWithMunicipalitiesList = transformVariableValueIntoProvinceWithMunicipality(
+                    provinceVariableList = getProvinceVariableList(),
+                    municipalityVariableList = getMunicipalityVariableList()
+                )
+
+                provinceWithMunicipalitiesList!!
+            }
         }
     }
 
     private suspend fun getProvinceVariableList() =
         filterNonValidProvinces(ineService.getVariableValues(variableId = PROVINCE_VARIABLE_KEY))
 
-    private suspend fun getMunicipalityVariableList() =
-        ineService.getVariableValues(variableId = MUNICIPALITY_VARIABLE_KEY)
+    private suspend fun getMunicipalityVariableList(): List<VariableValueDto> {
+        val municipalityList = mutableListOf<VariableValueDto>()
+        for (i in 1..MUNICIPALITY_RESPONSE_TOTAL_PAGES) {
+            municipalityList.addAll(
+                ineService.getVariableValues(
+                    variableId = MUNICIPALITY_VARIABLE_KEY,
+                    page = i
+                )
+            )
+        }
+
+        return municipalityList
+    }
 
     private fun filterNonValidProvinces(provinceList: List<VariableValueDto>): List<VariableValueDto> {
         return provinceList.filter {

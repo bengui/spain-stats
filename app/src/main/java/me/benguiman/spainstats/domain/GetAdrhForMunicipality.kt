@@ -13,7 +13,7 @@ class GetAdrhForMunicipality @Inject constructor(
 ) {
     suspend operator fun invoke(id: Int) : List<MunicipalityStat> {
         return withContext(coroutineDispatcher){
-            municipalityStatsRepository.getAdrhData(id)
+            municipalityStatsRepository.getAdrhDataByMunicipality(id)
         }
     }
 }

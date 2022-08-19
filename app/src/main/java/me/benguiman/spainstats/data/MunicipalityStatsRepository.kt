@@ -4,5 +4,5 @@ import me.benguiman.spainstats.MunicipalityStat
 
 interface MunicipalityStatsRepository {
 
-    suspend fun getAdrhData(municipalityId: Int) : List<MunicipalityStat>
+    suspend fun getAdrhDataByMunicipality(municipalityId: Int): List<MunicipalityStat>
 }

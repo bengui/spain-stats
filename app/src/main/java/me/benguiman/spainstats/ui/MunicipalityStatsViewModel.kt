@@ -72,10 +72,17 @@ class MunicipalityStatsViewModel @Inject constructor(
 
         return try {
             val municipalityStatList = getAdrhForMunicipality(id)
-            MunicipalityStatUiState(
-                loading = false,
-                municipalityStatList = municipalityStatList
-            )
+            if (municipalityStatList.isNotEmpty()) {
+                MunicipalityStatUiState(
+                    loading = false,
+                    municipalityStatList = municipalityStatList
+                )
+            } else {
+                MunicipalityStatUiState(
+                    loading = false,
+                    errorMessage = "Empty Data"
+                )
+            }
         } catch (e: Exception) {
             Log.e(TAG, e.message ?: e.toString())
             MunicipalityStatUiState(

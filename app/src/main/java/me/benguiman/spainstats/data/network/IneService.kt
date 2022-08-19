@@ -26,7 +26,7 @@ interface IneService {
 
     // https://servicios.ine.es/wstempus/js/ES/DATOS_METADATAOPERACION/353?p=12&g1=19:&nult=3&page=1
     @GET("{language}/$DATA_METADATA/{operation}")
-    suspend fun getDataByGeographicLocation(
+    suspend fun getDataByOperationFilterByVariable(
         @Path("language") language: Language = Language.ES,
         @Path("operation") operation: Int,
         @Query("g1") locationIdentifier: String,

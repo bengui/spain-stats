@@ -39,10 +39,26 @@ abstract class DataTypeVariable : VariableValue {
 }
 
 abstract class AccountingBalances : VariableValue {
-    override val value: Int = ID
+    override val variableId: Int = ID
 
     companion object {
         const val ID = 482
+    }
+}
+
+abstract class HomeType : VariableValue {
+    override val variableId: Int = ID
+
+    companion object {
+        const val ID = 545
+    }
+}
+
+abstract class HomeSize : VariableValue {
+    override val variableId: Int = ID
+
+    companion object {
+        const val ID = 933
     }
 }
 
@@ -61,7 +77,7 @@ object PercentageOfPopulation18OrYounger : DemographicConceptsVariable() {
     override val value = 366830
 }
 
-object MedianPopulationAge : DemographicConceptsVariable() {
+object AveragePopulationAge : DemographicConceptsVariable() {
     override val value = 274520
 }
 
@@ -69,10 +85,22 @@ object BaseData : DataTypeVariable() {
     override val value: Int = 72
 }
 
+object AnnualVariation : DataTypeVariable() {
+    override val value: Int = 74
+}
+
 object GrossIncomePerHome : AccountingBalances() {
-    override val variableId: Int = 382444
+    override val value: Int = 382444
 }
 
 object GrossIncomePerPerson : AccountingBalances() {
-    override val variableId: Int = 382443
+    override val value: Int = 382443
+}
+
+object TotalOfHomeTypes : HomeType() {
+    override val value: Int = 283862
+}
+
+object TotalOfHomeSize : HomeSize() {
+    override val value: Int = 391802
 }

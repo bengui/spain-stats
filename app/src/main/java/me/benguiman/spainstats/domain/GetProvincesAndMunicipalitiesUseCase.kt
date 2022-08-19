@@ -14,7 +14,10 @@ class GetProvincesAndMunicipalitiesUseCase @Inject constructor(
 
     suspend operator fun invoke(): List<Province> {
         return withContext(coroutineDispatcher) {
-            locationsRepository.getProvinceListPopulatedWithMunicipalities()
+            locationsRepository.getProvinceListPopulatedWithMunicipalities().filter {
+                it.id == 9 // BARCELONA
+                // TODO Remove this. Only for development stage
+            }
         }
     }
 }

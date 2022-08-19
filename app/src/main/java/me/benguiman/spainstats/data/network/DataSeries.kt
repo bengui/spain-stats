@@ -1,40 +1,48 @@
 package me.benguiman.spainstats.data.network
 
-interface Series {
+interface DataSeries {
     val variables: List<VariableValue>
 }
 
-object PercentageOfPopulationOf65OrMoreSeries : Series {
+object PercentageOfPopulationOf65OrMoreSeries : DataSeries {
     override val variables = listOf(
         PercentageOfPopulation65OrMore,
         BaseData
     )
 }
 
-object PercentageOfPopulationYoungerThan18Series : Series {
+object PercentageOfPopulationYoungerThan18Series : DataSeries {
     override val variables = listOf(
         PercentageOfPopulation18OrYounger,
         BaseData
     )
 }
 
-object AverageGrossHomeIncomeSeries : Series {
+object AverageGrossHomeIncomeSeries : DataSeries {
     override val variables = listOf(
         GrossIncomePerHome,
         BaseData
     )
 }
 
-object AverageGrossPersonIncomeSeries : Series {
+object AverageGrossPersonIncomeSeries : DataSeries {
     override val variables = listOf(
         GrossIncomePerPerson,
         BaseData
     )
 }
 
-object MedianPopulationAgeSeries : Series {
+object AveragePopulationAgeSeries : DataSeries {
     override val variables = listOf(
-        MedianPopulationAge,
+        AveragePopulationAge,
         BaseData
+    )
+}
+
+object IpvaAnnualVariation : DataSeries {
+    override val variables = listOf(
+        AnnualVariation,
+        TotalOfHomeSize,
+        TotalOfHomeTypes
     )
 }

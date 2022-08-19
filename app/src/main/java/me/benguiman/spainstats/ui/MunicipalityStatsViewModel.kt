@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import me.benguiman.spainstats.domain.GetAdrhForMunicipality
+import me.benguiman.spainstats.domain.GetDataForMunicipality
 import me.benguiman.spainstats.domain.GetProvincesAndMunicipalitiesUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class MunicipalityStatsViewModel @Inject constructor(
     private val getProvincesAndMunicipalitiesUseCase: GetProvincesAndMunicipalitiesUseCase,
-    private val getAdrhForMunicipality: GetAdrhForMunicipality
+    private val getDataForMunicipality: GetDataForMunicipality
 ) : ViewModel() {
 
     companion object {
@@ -75,7 +75,7 @@ class MunicipalityStatsViewModel @Inject constructor(
         Log.d(TAG, "getMunicipalityStats $id")
 
         return try {
-            val municipalityStatList = getAdrhForMunicipality(id)
+            val municipalityStatList = getDataForMunicipality(id)
             if (municipalityStatList.isNotEmpty()) {
                 MunicipalityStatUiState(
                     loading = false,

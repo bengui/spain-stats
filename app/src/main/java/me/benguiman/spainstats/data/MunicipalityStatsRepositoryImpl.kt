@@ -5,7 +5,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.benguiman.spainstats.MunicipalityStat
 import me.benguiman.spainstats.data.network.*
-import me.benguiman.spainstats.data.network.Series
+import me.benguiman.spainstats.data.network.DataSeries
 import me.benguiman.spainstats.di.IoDispatcher
 import javax.inject.Inject
 
@@ -14,16 +14,16 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
     @IoDispatcher private val coroutineDispatcher: CoroutineDispatcher
 ) : MunicipalityStatsRepository {
 
-    override suspend fun getAdrhDataByMunicipality(municipalityId: Int): List<MunicipalityStat> {
+    override suspend fun getOperationDataByMunicipalityFilteredBySeries(
+        operation: Operation,
+        municipalityId: Int,
+        vararg series: DataSeries
+    ): List<MunicipalityStat> {
         return getDataByOperationFilterByVariable(
-            operation = AdrhOperation,
+            operation = operation,
             variableId = MunicipalityVariable.ID,
             variableValue = municipalityId,
-            PercentageOfPopulationOf65OrMoreSeries,
-            PercentageOfPopulationYoungerThan18Series,
-            AverageGrossHomeIncomeSeries,
-            AverageGrossPersonIncomeSeries,
-            MedianPopulationAgeSeries
+            series = series.toList()
         )
     }
 
@@ -32,7 +32,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
         operation: Operation,
         variableId: Int,
         variableValue: Int,
-        vararg series: Series
+        series: List<DataSeries>
     ): List<MunicipalityStat> {
         return withContext(coroutineDispatcher) {
             val variableValueSet =
@@ -64,7 +64,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             }
         }
 
-    private fun Array<out Series>.toVariableList(): Set<VariableValue> =
+    private fun List<DataSeries>.toVariableList(): Set<VariableValue> =
         this.fold(mutableSetOf()) { list, item ->
             list.addAll(item.variables)
             list

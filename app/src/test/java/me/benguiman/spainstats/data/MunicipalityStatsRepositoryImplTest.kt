@@ -34,7 +34,7 @@ class MunicipalityStatsRepositoryImplTest {
                 PercentageOfPopulationYoungerThan18Series,
                 AverageGrossHomeIncomeSeries,
                 AverageGrossPersonIncomeSeries,
-                MedianPopulationAgeSeries
+                AveragePopulationAgeSeries
             )
             assertEquals(1, adrhData.size)
         }

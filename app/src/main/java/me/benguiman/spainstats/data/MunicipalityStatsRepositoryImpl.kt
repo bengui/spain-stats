@@ -5,7 +5,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.benguiman.spainstats.MunicipalityStat
 import me.benguiman.spainstats.data.network.*
-import me.benguiman.spainstats.data.network.DataSeries
 import me.benguiman.spainstats.di.IoDispatcher
 import javax.inject.Inject
 
@@ -25,6 +24,17 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             variableValue = municipalityId,
             series = series.toList()
         )
+    }
+
+    override suspend fun getTableDataByMunicipality(
+        tableData: TableData,
+        municipalityCode: String
+    ): List<MunicipalityStat> {
+        return withContext(coroutineDispatcher) {
+            ineService.getTableData(tableId = tableData.id)
+                .filterNameByMunicipalityId(municipalityCode)
+                .mapToMunicipalityStat()
+        }
     }
 
     @VisibleForTesting
@@ -61,6 +71,14 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
                     seriesVariable.variableId == variableValueDto.variable.id
                             && seriesVariable.value == variableValueDto.id
                 }
+            }
+        }
+
+    private fun List<DataEntryDto>.filterNameByMunicipalityId(municipalityCode: String) =
+        this.filter { dataEntryDto ->
+            dataEntryDto.metadata.any { variableValueDto ->
+                variableValueDto.variable.id == MunicipalityVariable.ID
+                        && variableValueDto.code == municipalityCode
             }
         }
 

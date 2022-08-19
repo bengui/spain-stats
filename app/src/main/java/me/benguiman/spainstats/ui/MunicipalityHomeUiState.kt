@@ -9,6 +9,7 @@ data class MunicipalityHomeUiState(
 data class ProvinceMunicipalityListItem(
     val id : Int = -1,
     val name: String = "",
+    val code: String = "",
     val title: Boolean = false
 )
 

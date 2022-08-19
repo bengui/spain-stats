@@ -60,8 +60,8 @@ fun StatsNavHos(
             val viewModel = hiltViewModel<MunicipalityStatsViewModel>()
             HomeScreen(
                 viewModel = viewModel,
-                onMunicipalityClickListener = { id ->
-                    navHostController.navigateToMunicipality(id)
+                onMunicipalityClickListener = { id, code ->
+                    navHostController.navigateToMunicipality(id, code)
                 })
         }
         composable(
@@ -72,17 +72,24 @@ fun StatsNavHos(
                 navBackStackEntry
                     .arguments
                     ?.getInt(Municipality.municipalityIdArg) ?: -1
+
+            val municipalityCode =
+                navBackStackEntry
+                    .arguments
+                    ?.getString(Municipality.municipalityCodeArg) ?: ""
+
             val viewModel = hiltViewModel<MunicipalityStatsViewModel>()
             MunicipalityScreen(
                 viewModel = viewModel,
-                municipalityId = municipalityId
+                municipalityId = municipalityId,
+                municipalityCode = municipalityCode
             )
         }
     }
 }
 
-private fun NavHostController.navigateToMunicipality(id: Int) =
-    this.navigateSingleTop("${Municipality.route}/$id")
+private fun NavHostController.navigateToMunicipality(id: Int, code: String) =
+    this.navigateSingleTop("${Municipality.route}/$id/$code")
 
 
 fun NavHostController.navigateSingleTop(route: String) =

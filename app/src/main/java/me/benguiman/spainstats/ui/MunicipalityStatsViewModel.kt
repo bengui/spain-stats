@@ -52,7 +52,8 @@ class MunicipalityStatsViewModel @Inject constructor(
                     acc.addAll(province.municipalityList.map {
                         ProvinceMunicipalityListItem(
                             id = it.id,
-                            name = it.name
+                            name = it.name,
+                            code = it.code
                         )
                     })
                     acc
@@ -71,11 +72,14 @@ class MunicipalityStatsViewModel @Inject constructor(
     }
 
 
-    suspend fun getMunicipalityStats(id: Int): MunicipalityStatUiState {
-        Log.d(TAG, "getMunicipalityStats $id")
+    suspend fun getMunicipalityStats(
+        municipalityId: Int,
+        municipalityCode: String
+    ): MunicipalityStatUiState {
+        Log.d(TAG, "getMunicipalityStats $municipalityId $municipalityCode")
 
         return try {
-            val municipalityStatList = getDataForMunicipality(id)
+            val municipalityStatList = getDataForMunicipality(municipalityId, municipalityCode)
             if (municipalityStatList.isNotEmpty()) {
                 MunicipalityStatUiState(
                     loading = false,

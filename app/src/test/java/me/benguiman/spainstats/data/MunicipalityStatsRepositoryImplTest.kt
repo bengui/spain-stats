@@ -30,11 +30,13 @@ class MunicipalityStatsRepositoryImplTest {
                 operation = AdrhOperation,
                 variableId = MunicipalityVariable.ID,
                 variableValue = 563,
-                PercentageOfPopulationOf65OrMoreSeries,
-                PercentageOfPopulationYoungerThan18Series,
-                AverageGrossHomeIncomeSeries,
-                AverageGrossPersonIncomeSeries,
-                AveragePopulationAgeSeries
+                series = listOf(
+                    PercentageOfPopulationOf65OrMoreSeries,
+                    PercentageOfPopulationYoungerThan18Series,
+                    AverageGrossHomeIncomeSeries,
+                    AverageGrossPersonIncomeSeries,
+                    AveragePopulationAgeSeries
+                )
             )
             assertEquals(1, adrhData.size)
         }
@@ -47,7 +49,7 @@ class MunicipalityStatsRepositoryImplTest {
                 operation = AdrhOperation,
                 variableId = MunicipalityVariable.ID,
                 variableValue = 563,
-                AverageGrossPersonIncomeSeries
+                series = listOf(AverageGrossPersonIncomeSeries)
             )
             assertTrue(adrhData.isEmpty())
         }
@@ -68,15 +70,23 @@ class MockIneService : IneService {
 
     override suspend fun getVariableValues(
         language: Language,
-        variableId: Int
+        variableId: Int,
+        page: Int
     ): List<VariableValueDto> {
-        throw Error()
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getTableData(
+        language: Language,
+        tableId: String,
+        type: Type
+    ): List<DataEntryDto> {
+        TODO("Not yet implemented")
     }
 }
 
 private val dataResponse = listOf(
     DataEntryDto(
-        code = "ADRH7218686",
         name = "Barcelona. Edad media de la población. Dato base. ",
         metadata = listOf(
             MetadataDto(

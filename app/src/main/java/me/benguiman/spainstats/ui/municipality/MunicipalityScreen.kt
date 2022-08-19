@@ -20,13 +20,14 @@ import me.benguiman.spainstats.ui.MunicipalityStatsViewModel
 fun MunicipalityScreen(
     viewModel: MunicipalityStatsViewModel = viewModel(),
     municipalityId: Int,
+    municipalityCode : String,
     modifier: Modifier = Modifier
 ) {
     val municipalityStatUiState by produceState(
         key1 = municipalityId,
         initialValue = MunicipalityStatUiState(loading = true),
     ) {
-        value = viewModel.getMunicipalityStats(municipalityId)
+        value = viewModel.getMunicipalityStats(municipalityId, municipalityCode)
     }
 
     if (municipalityStatUiState.loading) {

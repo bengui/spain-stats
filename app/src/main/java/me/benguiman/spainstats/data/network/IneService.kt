@@ -6,6 +6,7 @@ import retrofit2.http.Query
 
 const val DATA_METADATA = "DATOS_METADATAOPERACION"
 const val VARIABLE_VALUES = "VALORES_VARIABLE"
+const val TABLE_DATA = "DATOS_TABLA"
 
 enum class Language {
     ES, EN
@@ -45,6 +46,14 @@ interface IneService {
     suspend fun getVariableValues(
         @Path("language") language: Language = Language.ES,
         @Path("variableId") variableId: Int,
-        @Query("page") page : Int = 1
+        @Query("page") page: Int = 1
     ): List<VariableValueDto>
+
+    //https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/t20/e244/edificios/p04/l0/1mun00.px?tip=M
+    @GET("{language}/$TABLE_DATA/{tableId}")
+    suspend fun getTableData(
+        @Path("language") language: Language = Language.ES,
+        @Path("tableId") tableId: String,
+        @Query("tip") type: Type = Type.M
+    ): List<DataEntryDto>
 }

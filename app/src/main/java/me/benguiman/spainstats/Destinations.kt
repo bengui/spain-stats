@@ -17,9 +17,11 @@ object Municipality : SpainStatsDestination {
     override val route = "municipality_stats"
     override val title = "Municipality Stats"
     const val municipalityIdArg = "municipality_id"
-    val routeWithArgs = "$route/{$municipalityIdArg}"
+    const val municipalityCodeArg = "municipality_code"
+    val routeWithArgs = "$route/{$municipalityIdArg}/{$municipalityCodeArg}"
     val arguments = listOf(
-        navArgument(municipalityIdArg) { type = NavType.IntType }
+        navArgument(municipalityIdArg) { type = NavType.IntType },
+        navArgument(municipalityCodeArg) { type = NavType.StringType }
     )
 }
 

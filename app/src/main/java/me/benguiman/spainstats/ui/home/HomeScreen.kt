@@ -19,7 +19,7 @@ import me.benguiman.spainstats.ui.ProvinceMunicipalityListItem
 @Composable
 fun HomeScreen(
     viewModel: MunicipalityStatsViewModel = viewModel(),
-    onMunicipalityClickListener: (Int) -> Unit = {},
+    onMunicipalityClickListener: (Int, String) -> Unit = { _: Int, _: String -> },
     modifier: Modifier = Modifier
 ) {
     val municipalityStatsUiState by viewModel.municipalityHomeUiState.collectAsState()
@@ -40,7 +40,7 @@ fun HomeScreen(
 @Composable
 fun ProvinceMunicipalityList(
     provinceMunicipalityList: List<ProvinceMunicipalityListItem>,
-    onMunicipalityClickListener: (Int) -> Unit = {},
+    onMunicipalityClickListener: (Int, String) -> Unit = { _: Int, _: String -> },
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
@@ -55,7 +55,7 @@ fun ProvinceMunicipalityList(
                 )
             } else {
                 TextButton(onClick = {
-                    onMunicipalityClickListener(it.id)
+                    onMunicipalityClickListener(it.id, it.code)
                 }) {
                     Text(it.name)
                 }

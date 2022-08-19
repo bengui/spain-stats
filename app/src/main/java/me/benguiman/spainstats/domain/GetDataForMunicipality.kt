@@ -12,7 +12,10 @@ class GetDataForMunicipality @Inject constructor(
     private val municipalityStatsRepository: MunicipalityStatsRepository,
     @MainDispatcher private val coroutineDispatcher: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(municipalityId: Int): List<MunicipalityStat> {
+    suspend operator fun invoke(
+        municipalityId: Int,
+        municipalityCode: String
+    ): List<MunicipalityStat> {
         return withContext(coroutineDispatcher) {
 
             val municipalityStats = mutableListOf<MunicipalityStat>()
@@ -35,6 +38,13 @@ class GetDataForMunicipality @Inject constructor(
                     operation = IpvaOperation,
                     municipalityId = municipalityId,
                     IpvaAnnualVariation
+                )
+            )
+
+            municipalityStats.addAll(
+                municipalityStatsRepository.getTableDataByMunicipality(
+                    tableData = BuildingsAndRealState,
+                    municipalityCode = municipalityCode
                 )
             )
 

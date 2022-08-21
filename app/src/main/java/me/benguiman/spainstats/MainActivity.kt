@@ -60,8 +60,8 @@ fun StatsNavHos(
             val viewModel = hiltViewModel<MunicipalityStatsViewModel>()
             HomeScreen(
                 viewModel = viewModel,
-                onMunicipalityClickListener = { id, code ->
-                    navHostController.navigateToMunicipality(id, code)
+                onMunicipalityClickListener = { municipality ->
+                    navHostController.navigateToMunicipality(municipality.id, municipality.code)
                 })
         }
         composable(

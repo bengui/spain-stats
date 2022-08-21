@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import me.benguiman.spainstats.data.Municipality
 import me.benguiman.spainstats.domain.GetDataForMunicipality
 import me.benguiman.spainstats.domain.GetProvincesAndMunicipalitiesUseCase
 import javax.inject.Inject
@@ -59,8 +60,23 @@ class MunicipalityStatsViewModel @Inject constructor(
                     acc
                 }
 
+                val municipalityList =
+                    provinceList.fold(mutableListOf<Municipality>()) { list, province ->
+                        list.addAll(province.municipalityList)
+                        list
+                    }.map {
+                        MunicipalityUiState(
+                            id = it.id,
+                            name = it.name,
+                            code = it.code
+                        )
+                    }.sortedBy { it.name }
+
                 _municipalityHomeUiState.update {
-                    MunicipalityHomeUiState(provinceMunicipalityList = items)
+                    MunicipalityHomeUiState(
+                        provinceMunicipalityList = items,
+                        municipalityList = municipalityList
+                    )
                 }
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: e.toString())

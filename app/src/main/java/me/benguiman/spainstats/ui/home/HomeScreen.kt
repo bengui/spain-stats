@@ -1,25 +1,23 @@
 package me.benguiman.spainstats.ui.home
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import me.benguiman.spainstats.ui.MunicipalityStatsViewModel
+import me.benguiman.spainstats.ui.MunicipalityUiState
 import me.benguiman.spainstats.ui.ProvinceMunicipalityListItem
 
 @Composable
 fun HomeScreen(
     viewModel: MunicipalityStatsViewModel = viewModel(),
-    onMunicipalityClickListener: (Int, String) -> Unit = { _: Int, _: String -> },
+    onMunicipalityClickListener: (MunicipalityUiState) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val municipalityStatsUiState by viewModel.municipalityHomeUiState.collectAsState()
@@ -29,9 +27,9 @@ fun HomeScreen(
     } else if (municipalityStatsUiState.loading) {
         Text(text = "Loading...")
     } else {
-        ProvinceMunicipalityList(
-            provinceMunicipalityList = municipalityStatsUiState.provinceMunicipalityList,
-            onMunicipalityClickListener = onMunicipalityClickListener
+        MunicipalityAutocompleteField(
+            municipalityList = municipalityStatsUiState.municipalityList,
+            onMunicipalitySelected = onMunicipalityClickListener
         )
     }
 
@@ -61,5 +59,62 @@ fun ProvinceMunicipalityList(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MunicipalityAutocompleteField(
+    municipalityList: List<MunicipalityUiState>,
+    onMunicipalitySelected: (MunicipalityUiState) -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    var selectedOptionText by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    val municipalityAutocompleteState = remember { MunicipalityAutocompleteState(municipalityList) }
+    val options by produceState(
+        key1 = selectedOptionText,
+        initialValue = emptyList()
+    ) {
+        value = municipalityAutocompleteState.filterMunicipalityList(selectedOptionText).also {
+            //TODO Avoid updating this variable in here. It should work out of the box
+            expanded = it.isNotEmpty()
+        }
+    }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = {
+            expanded = !expanded
+        },
+        modifier = modifier
+    ) {
+        TextField(
+            value = selectedOptionText,
+            onValueChange = { newValue ->
+                selectedOptionText = newValue
+            },
+            label = { Text("Municipality") },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            modifier = Modifier.fillMaxWidth()
+        )
+        if (options.isNotEmpty()) {
+            ExposedDropdownMenu(expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { municipality ->
+                    DropdownMenuItem(text = { Text(municipality.name) },
+                        onClick = {
+                            selectedOptionText = municipality.name
+                            expanded = false
+                            onMunicipalitySelected(municipality)
+                        })
+                }
+            }
+        }
+
     }
 }

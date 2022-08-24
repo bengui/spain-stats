@@ -49,6 +49,10 @@ class LocationsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getMunicipality(municipalityId: Int): Municipality =
+        transformVariableValueIntoMunicipality(getMunicipalityVariableList().first { it.id == municipalityId })
+
+
     private suspend fun getProvinceVariableList() =
         filterNonValidProvinces(ineService.getVariableValues(variableId = PROVINCE_VARIABLE_KEY))
 

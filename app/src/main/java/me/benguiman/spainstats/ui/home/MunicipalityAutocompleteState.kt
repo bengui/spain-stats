@@ -1,6 +1,5 @@
 package me.benguiman.spainstats.ui.home
 
-import me.benguiman.spainstats.ui.MunicipalityUiState
 import java.text.Normalizer
 
 class MunicipalityAutocompleteState(private val municipalityList: List<MunicipalityUiState>) {
@@ -32,6 +31,7 @@ class MunicipalityAutocompleteState(private val municipalityList: List<Municipal
         )
         return resultList.toList()
     }
+
     private val REGEX_ACCENTS = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 
     private fun CharSequence.removeAccents(): String {

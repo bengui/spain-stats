@@ -3,6 +3,8 @@ package me.benguiman.spainstats.domain
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import me.benguiman.spainstats.MunicipalityStat
+import me.benguiman.spainstats.MunicipalityStatReport
+import me.benguiman.spainstats.data.LocationsRepository
 import me.benguiman.spainstats.data.MunicipalityStatsRepository
 import me.benguiman.spainstats.data.network.*
 import me.benguiman.spainstats.di.MainDispatcher
@@ -10,12 +12,13 @@ import javax.inject.Inject
 
 class GetDataForMunicipality @Inject constructor(
     private val municipalityStatsRepository: MunicipalityStatsRepository,
+    private val locationsRepository: LocationsRepository,
     @MainDispatcher private val coroutineDispatcher: CoroutineDispatcher
 ) {
     suspend operator fun invoke(
         municipalityId: Int,
         municipalityCode: String
-    ): List<MunicipalityStat> {
+    ): MunicipalityStatReport {
         return withContext(coroutineDispatcher) {
 
             val municipalityStats = mutableListOf<MunicipalityStat>()
@@ -48,7 +51,10 @@ class GetDataForMunicipality @Inject constructor(
                 )
             )
 
-            municipalityStats
+            MunicipalityStatReport(
+                municipalityName = locationsRepository.getMunicipality(municipalityId).name,
+                municipalityStatList = municipalityStats
+            )
         }
     }
 }

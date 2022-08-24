@@ -1,16 +1,19 @@
 package me.benguiman.spainstats
 
+import androidx.annotation.StringRes
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
 interface SpainStatsDestination {
     val route: String
-    val title: String
+    val title: Int
 }
 
 object Home : SpainStatsDestination {
     override val route = "home"
-    override val title = "Pick a place"
+
+    @StringRes
+    override val title = R.string.home_title
 }
 
 object Municipality : SpainStatsDestination {
@@ -18,7 +21,9 @@ object Municipality : SpainStatsDestination {
     const val municipalityIdArg = "municipality_id"
     const val municipalityCodeArg = "municipality_code"
     override val route = "${baseRoute}/{$municipalityIdArg}/{$municipalityCodeArg}"
-    override val title = "Municipality Stats"
+
+    @StringRes
+    override val title = R.string.municipality_title
     val arguments = listOf(
         navArgument(municipalityIdArg) { type = NavType.IntType },
         navArgument(municipalityCodeArg) { type = NavType.StringType }

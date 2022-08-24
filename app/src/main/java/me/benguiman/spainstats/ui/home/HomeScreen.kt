@@ -8,10 +8,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import me.benguiman.spainstats.ui.MunicipalityUiState
-import me.benguiman.spainstats.ui.ProvinceMunicipalityListItem
+import me.benguiman.spainstats.R
 
 @Composable
 fun HomeScreen(
@@ -24,11 +24,12 @@ fun HomeScreen(
     if (municipalityStatsUiState.errorMessage.isNotEmpty()) {
         Text(text = municipalityStatsUiState.errorMessage)
     } else if (municipalityStatsUiState.loading) {
-        Text(text = "Loading...")
+        Text(stringResource(id = R.string.loading_data))
     } else {
         MunicipalityAutocompleteField(
             municipalityList = municipalityStatsUiState.municipalityList,
-            onMunicipalitySelected = onMunicipalityClickListener
+            onMunicipalitySelected = onMunicipalityClickListener,
+            modifier = modifier
         )
     }
 }
@@ -92,7 +93,7 @@ fun MunicipalityAutocompleteField(
             onValueChange = { newValue ->
                 selectedOptionText = newValue
             },
-            label = { Text("Municipality") },
+            label = { Text(stringResource(R.string.municipality_title)) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },

@@ -50,19 +50,21 @@ class MunicipalityStatsViewModel @Inject constructor(
                 val municipalityCode: String = savedStateHandle[municipalityCodeArg]
                     ?: throw IllegalStateException("municipality code is mandatory")
                 Log.d(TAG, "getMunicipalityStats $municipalityId $municipalityCode}")
-                val municipalityStatList = getDataForMunicipality(municipalityId, municipalityCode)
-                if (municipalityStatList.isNotEmpty()) {
+                val municipalityStatReport =
+                    getDataForMunicipality(municipalityId, municipalityCode)
+                if (municipalityStatReport.municipalityStatList.isNotEmpty()) {
                     _municipalityStatUiState.update {
                         MunicipalityStatUiState(
                             loading = false,
-                            municipalityStatList = municipalityStatList
+                            municipalityStatList = municipalityStatReport.municipalityStatList,
+                            municipalityName = municipalityStatReport.municipalityName
                         )
                     }
                 } else {
                     _municipalityStatUiState.update {
                         MunicipalityStatUiState(
                             loading = false,
-                            errorMessage = "Empty Data"
+                            error = NoDataError
                         )
                     }
                 }
@@ -71,7 +73,7 @@ class MunicipalityStatsViewModel @Inject constructor(
                 _municipalityStatUiState.update {
                     MunicipalityStatUiState(
                         loading = false,
-                        errorMessage = "Error retrieving Municipality Stats"
+                        error = ResponseError
                     )
                 }
             }

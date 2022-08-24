@@ -11,14 +11,18 @@ fun transformVariableValueIntoAutonomousCommunity(variableList: List<VariableVal
         )
     }
 
-fun transformVariableValueIntoMunicipality(variableList: List<VariableValueDto>): List<Municipality> =
+fun transformVariableValueListIntoMunicipality(variableList: List<VariableValueDto>): List<Municipality> =
     variableList.map {
-        Municipality(
-            id = it.id,
-            name = it.name,
-            code = it.code
-        )
+        transformVariableValueIntoMunicipality(it)
     }
+
+fun transformVariableValueIntoMunicipality(it: VariableValueDto) =
+    Municipality(
+        id = it.id,
+        name = it.name,
+        code = it.code
+    )
+
 
 fun transformVariableValueIntoProvinceWithMunicipality(
     provinceVariableList: List<VariableValueDto>,
@@ -31,7 +35,7 @@ fun transformVariableValueIntoProvinceWithMunicipality(
                 id = it.id,
                 name = it.name,
                 code = it.code,
-                municipalityList = transformVariableValueIntoMunicipality(
+                municipalityList = transformVariableValueListIntoMunicipality(
                     filterMunicipalitiesFromProvince(
                         it.code,
                         municipalityVariableList

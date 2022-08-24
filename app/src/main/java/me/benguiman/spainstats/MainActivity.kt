@@ -2,16 +2,26 @@ package me.benguiman.spainstats
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role.Companion.Image
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -20,6 +30,8 @@ import kotlinx.coroutines.launch
 import me.benguiman.spainstats.ui.StatsSnackbarHost
 import me.benguiman.spainstats.ui.showSnackBar
 import me.benguiman.spainstats.ui.theme.SpainStatsTheme
+import androidx.compose.foundation.Image
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -50,8 +62,8 @@ fun StatsApp(
             snackbarHost = { StatsSnackbarHost(snackbarHostState) },
             topBar = {
                 SpainStatsTopBar(
-                    title = currentScreen.title,
-                    displayBackButton = currentRoute != Home.route,
+                    title = stringResource(currentScreen.title),
+                    screen = currentScreen,
                     onBackPressed = {
                         navHostController.navigateUp()
                     }
@@ -72,7 +84,7 @@ fun StatsApp(
 @Composable
 fun SpainStatsTopBar(
     title: String,
-    displayBackButton: Boolean = false,
+    screen: SpainStatsDestination = Home,
     onBackPressed: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -86,12 +98,24 @@ fun SpainStatsTopBar(
         },
         navigationIcon =
         {
-            if (displayBackButton) {
-                IconButton(onClick = onBackPressed) {
-                    Icon(
-                        imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = "Back"
+            when (screen) {
+                Home -> {
+                    Image(
+                        painter = painterResource(id = R.drawable.es_flag),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = modifier
+                            .size(40.dp)
+                            .clip(CircleShape)
                     )
+                }
+                else -> {
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.navigate_back_content_description)
+                        )
+                    }
                 }
             }
         },
@@ -103,5 +127,5 @@ fun SpainStatsTopBar(
 @Preview
 @Composable
 fun SpainStatsTopBarPreview() {
-    SpainStatsTopBar(title = "Municipality", displayBackButton = true)
+    SpainStatsTopBar(title = stringResource(Home.title))
 }

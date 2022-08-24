@@ -1,10 +1,14 @@
 package me.benguiman.spainstats.di
 
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import me.benguiman.spainstats.data.network.CacheInterceptor
 import me.benguiman.spainstats.data.network.IneService
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -18,11 +22,15 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideIneService(): IneService {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
+    fun provideIneService(@ApplicationContext context: Context): IneService {
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
+        httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
+        val maxSize: Long = 50 * 1024 * 1024
+        val cache = Cache(context.cacheDir, maxSize)
         val client: OkHttpClient = OkHttpClient.Builder()
-            .addInterceptor(interceptor)
+            .cache(cache)
+            .addNetworkInterceptor(CacheInterceptor())
+            .addInterceptor(httpLoggingInterceptor)
             .build()
 
         return Retrofit.Builder()

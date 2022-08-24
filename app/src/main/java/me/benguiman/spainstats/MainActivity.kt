@@ -2,22 +2,23 @@ package me.benguiman.spainstats
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import me.benguiman.spainstats.ui.MunicipalityStatsViewModel
-import me.benguiman.spainstats.ui.home.HomeScreen
-import me.benguiman.spainstats.ui.municipality.MunicipalityScreen
+import kotlinx.coroutines.launch
+import me.benguiman.spainstats.ui.StatsSnackbarHost
+import me.benguiman.spainstats.ui.showSnackBar
 import me.benguiman.spainstats.ui.theme.SpainStatsTheme
 
 @AndroidEntryPoint
@@ -31,72 +32,76 @@ class MainActivity : ComponentActivity() {
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatsApp(
     navHostController: NavHostController = rememberNavController()
 ) {
+
+    val currentBackStack by navHostController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStack?.destination
+    val currentRoute = currentDestination?.route ?: Home.route
+    val currentScreen = spainStatsScreens.find { it.route == currentRoute } ?: Home
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     SpainStatsTheme {
-        // A surface container using the 'background' color from the theme
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background,
-        ) {
-            StatsNavHos(navHostController = navHostController)
-        }
-    }
-}
-
-@Composable
-fun StatsNavHos(
-    navHostController: NavHostController,
-    modifier: Modifier = Modifier
-) {
-    NavHost(
-        navController = navHostController,
-        startDestination = Home.route,
-        modifier = modifier
-    ) {
-        composable(route = Home.route) {
-            val viewModel = hiltViewModel<MunicipalityStatsViewModel>()
-            HomeScreen(
-                viewModel = viewModel,
-                onMunicipalityClickListener = { municipality ->
-                    navHostController.navigateToMunicipality(municipality.id, municipality.code)
-                })
-        }
-        composable(
-            route = Municipality.routeWithArgs,
-            arguments = Municipality.arguments
-        ) { navBackStackEntry ->
-            val municipalityId =
-                navBackStackEntry
-                    .arguments
-                    ?.getInt(Municipality.municipalityIdArg) ?: -1
-
-            val municipalityCode =
-                navBackStackEntry
-                    .arguments
-                    ?.getString(Municipality.municipalityCodeArg) ?: ""
-
-            val viewModel = hiltViewModel<MunicipalityStatsViewModel>()
-            MunicipalityScreen(
-                viewModel = viewModel,
-                municipalityId = municipalityId,
-                municipalityCode = municipalityCode
+        Scaffold(
+            snackbarHost = { StatsSnackbarHost(snackbarHostState) },
+            topBar = {
+                SpainStatsTopBar(
+                    title = currentScreen.title,
+                    displayBackButton = currentRoute != Home.route,
+                    onBackPressed = {
+                        navHostController.navigateUp()
+                    }
+                )
+            }
+        ) { internalPadding ->
+            StatsNavHost(
+                navHostController = navHostController,
+                showSnackBar = { scope.launch { snackbarHostState.showSnackBar(it) } },
+                dismissSnackBar = { scope.launch { snackbarHostState.currentSnackbarData?.dismiss() } },
+                modifier = Modifier.padding(internalPadding)
             )
         }
     }
 }
 
-private fun NavHostController.navigateToMunicipality(id: Int, code: String) =
-    this.navigateSingleTop("${Municipality.route}/$id/$code")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SpainStatsTopBar(
+    title: String,
+    displayBackButton: Boolean = false,
+    onBackPressed: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    SmallTopAppBar(
+        title = {
+            Text(
+                title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        },
+        navigationIcon =
+        {
+            if (displayBackButton) {
+                IconButton(onClick = onBackPressed) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+        },
+        modifier = modifier
+    )
+}
 
 
-fun NavHostController.navigateSingleTop(route: String) =
-    this.navigate(route) {
-        popUpTo(this@navigateSingleTop.graph.findStartDestination().id) {
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-    }
+@Preview
+@Composable
+fun SpainStatsTopBarPreview() {
+    SpainStatsTopBar(title = "Municipality", displayBackButton = true)
+}

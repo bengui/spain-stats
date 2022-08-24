@@ -1,4 +1,4 @@
-package me.benguiman.spainstats.ui
+package me.benguiman.spainstats.ui.home
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -10,18 +10,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.benguiman.spainstats.data.Municipality
-import me.benguiman.spainstats.domain.GetDataForMunicipality
 import me.benguiman.spainstats.domain.GetProvincesAndMunicipalitiesUseCase
 import javax.inject.Inject
 
 @HiltViewModel
-class MunicipalityStatsViewModel @Inject constructor(
-    private val getProvincesAndMunicipalitiesUseCase: GetProvincesAndMunicipalitiesUseCase,
-    private val getDataForMunicipality: GetDataForMunicipality
+class HomeViewModel @Inject constructor(
+    private val getProvincesAndMunicipalitiesUseCase: GetProvincesAndMunicipalitiesUseCase
 ) : ViewModel() {
-
     companion object {
-        const val TAG = "MunicipalityStatsViewModel"
+        const val TAG = "HomeViewModel"
     }
 
     private val _municipalityHomeUiState: MutableStateFlow<MunicipalityHomeUiState> =
@@ -85,35 +82,5 @@ class MunicipalityStatsViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-
-    suspend fun getMunicipalityStats(
-        municipalityId: Int,
-        municipalityCode: String
-    ): MunicipalityStatUiState {
-        Log.d(TAG, "getMunicipalityStats $municipalityId $municipalityCode")
-
-        return try {
-            val municipalityStatList = getDataForMunicipality(municipalityId, municipalityCode)
-            if (municipalityStatList.isNotEmpty()) {
-                MunicipalityStatUiState(
-                    loading = false,
-                    municipalityStatList = municipalityStatList
-                )
-            } else {
-                MunicipalityStatUiState(
-                    loading = false,
-                    errorMessage = "Empty Data"
-                )
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, e.message ?: e.toString())
-            MunicipalityStatUiState(
-                loading = false,
-                errorMessage = "Error retrieving Municipality Stats"
-            )
-        }
-
     }
 }

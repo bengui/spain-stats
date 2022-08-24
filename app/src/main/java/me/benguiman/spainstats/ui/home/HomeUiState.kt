@@ -1,4 +1,4 @@
-package me.benguiman.spainstats.ui
+package me.benguiman.spainstats.ui.home
 
 data class MunicipalityHomeUiState(
     val provinceMunicipalityList: List<ProvinceMunicipalityListItem> = emptyList(),

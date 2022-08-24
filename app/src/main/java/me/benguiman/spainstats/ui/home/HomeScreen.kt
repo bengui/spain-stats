@@ -9,14 +9,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import me.benguiman.spainstats.ui.MunicipalityStatsViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import me.benguiman.spainstats.ui.MunicipalityUiState
 import me.benguiman.spainstats.ui.ProvinceMunicipalityListItem
 
 @Composable
 fun HomeScreen(
-    viewModel: MunicipalityStatsViewModel = viewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
     onMunicipalityClickListener: (MunicipalityUiState) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -32,7 +31,6 @@ fun HomeScreen(
             onMunicipalitySelected = onMunicipalityClickListener
         )
     }
-
 }
 
 @Composable

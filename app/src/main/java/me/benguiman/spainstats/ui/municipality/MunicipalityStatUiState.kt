@@ -1,4 +1,4 @@
-package me.benguiman.spainstats.ui
+package me.benguiman.spainstats.ui.municipality
 
 import me.benguiman.spainstats.MunicipalityStat
 

@@ -10,15 +10,15 @@ interface SpainStatsDestination {
 
 object Home : SpainStatsDestination {
     override val route = "home"
-    override val title = "Municipalities"
+    override val title = "Pick a place"
 }
 
 object Municipality : SpainStatsDestination {
-    override val route = "municipality_stats"
-    override val title = "Municipality Stats"
+    const val baseRoute = "municipality_stats"
     const val municipalityIdArg = "municipality_id"
     const val municipalityCodeArg = "municipality_code"
-    val routeWithArgs = "$route/{$municipalityIdArg}/{$municipalityCodeArg}"
+    override val route = "${baseRoute}/{$municipalityIdArg}/{$municipalityCodeArg}"
+    override val title = "Municipality Stats"
     val arguments = listOf(
         navArgument(municipalityIdArg) { type = NavType.IntType },
         navArgument(municipalityCodeArg) { type = NavType.StringType }

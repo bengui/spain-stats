@@ -6,34 +6,46 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import me.benguiman.spainstats.MunicipalityStat
-import me.benguiman.spainstats.ui.MunicipalityStatUiState
-import me.benguiman.spainstats.ui.MunicipalityStatsViewModel
+import me.benguiman.spainstats.ui.StatsSnackbarData
 
 @Composable
 fun MunicipalityScreen(
-    viewModel: MunicipalityStatsViewModel = viewModel(),
-    municipalityId: Int,
-    municipalityCode : String,
+    viewModel: MunicipalityStatsViewModel = hiltViewModel(),
+    showSnackBar: (StatsSnackbarData) -> Unit,
+    dismissSnackBar: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val municipalityStatUiState by produceState(
-        key1 = municipalityId,
-        initialValue = MunicipalityStatUiState(loading = true),
-    ) {
-        value = viewModel.getMunicipalityStats(municipalityId, municipalityCode)
+    val municipalityStatUiState by viewModel.municipalityStatUiState.collectAsState()
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        viewModel.getMunicipalityStats()
     }
+    DisposableEffect(Unit) { onDispose { dismissSnackBar() } }
 
     if (municipalityStatUiState.loading) {
         Text("Loading...")
     } else if (municipalityStatUiState.errorMessage.isNotEmpty()) {
-        Text(municipalityStatUiState.errorMessage)
+        LaunchedEffect(Unit) {
+            showSnackBar(
+                StatsSnackbarData(
+                    message = municipalityStatUiState.errorMessage,
+                    isError = true,
+                    withDismissAction = false,
+                    actionLabel = "Retry",
+                    onAction = {
+                        scope.launch {
+                            viewModel.getMunicipalityStats()
+                        }
+                    }
+                )
+            )
+        }
     } else {
         MunicipalityStats(municipalityStatUiState.municipalityStatList, modifier)
     }

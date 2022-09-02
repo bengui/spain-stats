@@ -10,7 +10,7 @@ import me.benguiman.spainstats.data.network.*
 import me.benguiman.spainstats.di.MainDispatcher
 import javax.inject.Inject
 
-class GetDataForMunicipality @Inject constructor(
+class GetDataForMunicipalityUseCase @Inject constructor(
     private val municipalityStatsRepository: MunicipalityStatsRepository,
     private val locationsRepository: LocationsRepository,
     @MainDispatcher private val coroutineDispatcher: CoroutineDispatcher
@@ -35,19 +35,18 @@ class GetDataForMunicipality @Inject constructor(
                     )
             )
 
+            municipalityStats.addAll(
+                municipalityStatsRepository.getTableDataByMunicipality(
+                    tableData = BuildingsAndRealState,
+                    municipalityCode = municipalityCode
+                )
+            )
 
             municipalityStats.addAll(
                 municipalityStatsRepository.getOperationDataByMunicipalityFilteredBySeries(
                     operation = IpvaOperation,
                     municipalityId = municipalityId,
                     IpvaAnnualVariation
-                )
-            )
-
-            municipalityStats.addAll(
-                municipalityStatsRepository.getTableDataByMunicipality(
-                    tableData = BuildingsAndRealState,
-                    municipalityCode = municipalityCode
                 )
             )
 

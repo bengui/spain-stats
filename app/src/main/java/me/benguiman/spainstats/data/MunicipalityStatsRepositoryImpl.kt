@@ -33,7 +33,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
         return withContext(coroutineDispatcher) {
             ineService.getTableData(tableId = tableData.id)
                 .filterNameByMunicipalityId(municipalityCode)
-                .mapToMunicipalityStat()
+                .mapToMunicipalityStatWithHeadlineCode(tableData.headlineCodes)
         }
     }
 
@@ -75,7 +75,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             }
         }
 
-    private fun List<DataEntryDto>.filterNameByMunicipalityId(municipalityCode: String) : List<DataEntryDto> =
+    private fun List<DataEntryDto>.filterNameByMunicipalityId(municipalityCode: String): List<DataEntryDto> =
         this.filter { dataEntryDto ->
             dataEntryDto.metadata.any { variableValueDto ->
                 variableValueDto.variable.id == MunicipalityVariable.ID
@@ -89,10 +89,12 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             list
         }
 
-    private fun List<DataEntryDto>.mapToMunicipalityStat(): List<MunicipalityStat> =
+    private fun List<DataEntryDto>.mapToMunicipalityStatWithHeadlineCode(codeList: List<String>): List<MunicipalityStat> =
         this.map {
             MunicipalityStat(
-                name = it.name,
+                name = it.metadata.first { metadataDto ->
+                    codeList.any { code -> code == metadataDto.code }
+                }.name,
                 value = it.dataDto.first().value
                     ?: throw IllegalStateException("data should not be empty")
             )

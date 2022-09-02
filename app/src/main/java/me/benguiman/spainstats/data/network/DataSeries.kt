@@ -51,5 +51,5 @@ object IpvaAnnualVariation : DataSeries {
         TotalOfHomeSize,
         TotalOfHomeTypes
     )
-    override val headlineVariable = TotalOfHomeSize
+    override val headlineVariable = AnnualVariation
 }

@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.benguiman.spainstats.Municipality.municipalityCodeArg
 import me.benguiman.spainstats.Municipality.municipalityIdArg
-import me.benguiman.spainstats.domain.GetDataForMunicipality
+import me.benguiman.spainstats.domain.GetDataForMunicipalityUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class MunicipalityStatsViewModel @Inject constructor(
-    private val getDataForMunicipality: GetDataForMunicipality,
+    private val getDataForMunicipalityUseCase: GetDataForMunicipalityUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -51,7 +51,7 @@ class MunicipalityStatsViewModel @Inject constructor(
                     ?: throw IllegalStateException("municipality code is mandatory")
                 Log.d(TAG, "getMunicipalityStats $municipalityId $municipalityCode}")
                 val municipalityStatReport =
-                    getDataForMunicipality(municipalityId, municipalityCode)
+                    getDataForMunicipalityUseCase(municipalityId, municipalityCode)
                 if (municipalityStatReport.municipalityStatList.isNotEmpty()) {
                     _municipalityStatUiState.update {
                         MunicipalityStatUiState(

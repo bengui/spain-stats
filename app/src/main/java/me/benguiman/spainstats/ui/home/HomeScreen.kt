@@ -3,6 +3,7 @@ package me.benguiman.spainstats.ui.home
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
@@ -22,14 +23,14 @@ fun HomeScreen(
     val municipalityStatsUiState by viewModel.municipalityHomeUiState.collectAsState()
 
     if (municipalityStatsUiState.errorMessage.isNotEmpty()) {
-        Text(text = municipalityStatsUiState.errorMessage)
+        Text(text = municipalityStatsUiState.errorMessage, modifier = modifier.padding(8.dp))
     } else if (municipalityStatsUiState.loading) {
-        Text(stringResource(id = R.string.loading_data))
+        Text(stringResource(id = R.string.loading_data), modifier = modifier.padding(8.dp))
     } else {
         MunicipalityAutocompleteField(
             municipalityList = municipalityStatsUiState.municipalityList,
             onMunicipalitySelected = onMunicipalityClickListener,
-            modifier = modifier
+            modifier = modifier.padding(8.dp)
         )
     }
 }

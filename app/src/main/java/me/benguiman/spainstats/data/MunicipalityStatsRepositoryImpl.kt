@@ -55,7 +55,8 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             )
                 .filterEmptyData()
                 .filterByVariables(variableValueSet)
-                .mapToMunicipalityStat()
+                .mapToDataEntryDtoWithDataSeries(series)
+                .mapDataSeriesDataEntryDtoToMunicipalityStat()
         }
     }
 
@@ -74,7 +75,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             }
         }
 
-    private fun List<DataEntryDto>.filterNameByMunicipalityId(municipalityCode: String) =
+    private fun List<DataEntryDto>.filterNameByMunicipalityId(municipalityCode: String) : List<DataEntryDto> =
         this.filter { dataEntryDto ->
             dataEntryDto.metadata.any { variableValueDto ->
                 variableValueDto.variable.id == MunicipalityVariable.ID
@@ -88,11 +89,35 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             list
         }
 
-    private fun List<DataEntryDto>.mapToMunicipalityStat() =
+    private fun List<DataEntryDto>.mapToMunicipalityStat(): List<MunicipalityStat> =
         this.map {
             MunicipalityStat(
                 name = it.name,
                 value = it.dataDto.first().value
+                    ?: throw IllegalStateException("data should not be empty")
+            )
+        }
+
+    private fun List<DataEntryDto>.mapToDataEntryDtoWithDataSeries(series: List<DataSeries>): List<Pair<DataSeries, DataEntryDto>> =
+        this.map { dataEntryDto ->
+            series.first { dataSeries ->
+                dataSeries.variables.all { variableValue ->
+                    dataEntryDto.metadata.any { metadataDto ->
+                        variableValue.value == metadataDto.id
+                                && variableValue.variableId == metadataDto.variable.id
+                    }
+                }
+            } to dataEntryDto
+        }
+
+    private fun List<Pair<DataSeries, DataEntryDto>>.mapDataSeriesDataEntryDtoToMunicipalityStat(): List<MunicipalityStat> =
+        this.map {
+            MunicipalityStat(
+                name = it.second.metadata.first { metadataDto ->
+                    it.first.headlineVariable.value == metadataDto.id
+                            && it.first.headlineVariable.variableId == metadataDto.variable.id
+                }.name,
+                value = it.second.dataDto.first().value
                     ?: throw IllegalStateException("data should not be empty")
             )
         }

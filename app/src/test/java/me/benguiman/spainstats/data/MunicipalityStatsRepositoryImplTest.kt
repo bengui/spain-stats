@@ -8,6 +8,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+const val AVERAGE_POPULATION_SIZE_TITLE = "Edad media de la población"
+
 class MunicipalityStatsRepositoryImplTest {
 
 
@@ -39,6 +41,7 @@ class MunicipalityStatsRepositoryImplTest {
                 )
             )
             assertEquals(1, adrhData.size)
+            assertEquals(AVERAGE_POPULATION_SIZE_TITLE, adrhData.first().name)
         }
     }
 
@@ -106,7 +109,7 @@ private val dataResponse = listOf(
                     name = "Conceptos Demográficos",
                     code = ""
                 ),
-                name = "Edad media de la población",
+                name = AVERAGE_POPULATION_SIZE_TITLE,
                 code = ""
             ),
             MetadataDto(

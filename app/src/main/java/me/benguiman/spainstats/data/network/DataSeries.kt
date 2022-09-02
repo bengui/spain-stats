@@ -2,6 +2,7 @@ package me.benguiman.spainstats.data.network
 
 interface DataSeries {
     val variables: List<VariableValue>
+    val headlineVariable: VariableValue
 }
 
 object PercentageOfPopulationOf65OrMoreSeries : DataSeries {
@@ -9,6 +10,7 @@ object PercentageOfPopulationOf65OrMoreSeries : DataSeries {
         PercentageOfPopulation65OrMore,
         BaseData
     )
+    override val headlineVariable = PercentageOfPopulation65OrMore
 }
 
 object PercentageOfPopulationYoungerThan18Series : DataSeries {
@@ -16,6 +18,7 @@ object PercentageOfPopulationYoungerThan18Series : DataSeries {
         PercentageOfPopulation18OrYounger,
         BaseData
     )
+    override val headlineVariable = PercentageOfPopulation18OrYounger
 }
 
 object AverageGrossHomeIncomeSeries : DataSeries {
@@ -23,6 +26,7 @@ object AverageGrossHomeIncomeSeries : DataSeries {
         GrossIncomePerHome,
         BaseData
     )
+    override val headlineVariable = GrossIncomePerHome
 }
 
 object AverageGrossPersonIncomeSeries : DataSeries {
@@ -30,6 +34,7 @@ object AverageGrossPersonIncomeSeries : DataSeries {
         GrossIncomePerPerson,
         BaseData
     )
+    override val headlineVariable = GrossIncomePerPerson
 }
 
 object AveragePopulationAgeSeries : DataSeries {
@@ -37,6 +42,7 @@ object AveragePopulationAgeSeries : DataSeries {
         AveragePopulationAge,
         BaseData
     )
+    override val headlineVariable = AveragePopulationAge
 }
 
 object IpvaAnnualVariation : DataSeries {
@@ -45,4 +51,5 @@ object IpvaAnnualVariation : DataSeries {
         TotalOfHomeSize,
         TotalOfHomeTypes
     )
+    override val headlineVariable = TotalOfHomeSize
 }

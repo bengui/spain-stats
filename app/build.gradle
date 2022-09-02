@@ -34,7 +34,7 @@ android {
             variant.outputs.all {
                 def flavor = variant.name
                 def versionName = variant.versionName
-                def formattedDate = new Date().format('yyyyMMdd')
+                def formattedDate = new Date().format('yyyyMMdd_HHmmss')
                 outputFileName = "spain_stats_${flavor}_${versionName}_${formattedDate}.apk"
             }
         }

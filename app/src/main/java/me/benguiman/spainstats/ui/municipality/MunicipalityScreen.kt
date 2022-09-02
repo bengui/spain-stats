@@ -36,7 +36,7 @@ fun MunicipalityScreen(
     DisposableEffect(Unit) { onDispose { dismissSnackBar() } }
 
     if (municipalityStatUiState.loading) {
-        Text(stringResource(id = R.string.loading_data))
+        Text(stringResource(id = R.string.loading_data), modifier = modifier.padding(8.dp))
     } else if (municipalityStatUiState.error != null) {
         val context = LocalContext.current
         LaunchedEffect(Unit) {
@@ -103,12 +103,12 @@ private fun MunicipalityStatsCard(
         Column(Modifier.padding(8.dp)) {
             Text(
                 text = name,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.End,
                 modifier = Modifier.fillMaxWidth()
             )

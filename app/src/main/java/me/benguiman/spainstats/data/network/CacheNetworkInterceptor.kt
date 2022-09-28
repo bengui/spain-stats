@@ -2,8 +2,9 @@ package me.benguiman.spainstats.data.network
 
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class CacheInterceptor : Interceptor {
+class CacheNetworkInterceptor @Inject constructor() : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
 

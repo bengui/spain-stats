@@ -36,7 +36,7 @@ object AppModule {
         val client: OkHttpClient = OkHttpClient.Builder()
             .cache(cache)
             .addNetworkInterceptor(cacheNetworkInterceptor)
-            .addInterceptor(reTryInterceptor)
+            .addNetworkInterceptor(reTryInterceptor)
             .addInterceptor(httpLoggingInterceptor)
             .readTimeout(20, TimeUnit.SECONDS)
             .writeTimeout(20, TimeUnit.SECONDS)

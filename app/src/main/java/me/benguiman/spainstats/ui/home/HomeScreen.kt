@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import me.benguiman.spainstats.R
@@ -72,12 +75,11 @@ fun MunicipalityAutocompleteField(
     var selectedOptionText by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     val municipalityAutocompleteState = remember { MunicipalityAutocompleteState(municipalityList) }
-    val options by produceState(
+    val options by produceState<List<MunicipalityUiState>>(
         key1 = selectedOptionText,
         initialValue = emptyList()
     ) {
         value = municipalityAutocompleteState.filterMunicipalityList(selectedOptionText).also {
-            //TODO Avoid updating this variable in here. It should work out of the box
             expanded = it.isNotEmpty()
         }
     }
@@ -99,6 +101,15 @@ fun MunicipalityAutocompleteField(
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    options.firstOrNull()?.let { onMunicipalitySelected(it) }
+                }
+            ),
             modifier = Modifier.fillMaxWidth()
         )
         if (options.isNotEmpty()) {

@@ -36,10 +36,10 @@ object AppModule {
         val client: OkHttpClient = OkHttpClient.Builder()
             .cache(cache)
             .addNetworkInterceptor(cacheNetworkInterceptor)
-            .addNetworkInterceptor(reTryInterceptor)
+            .addInterceptor(reTryInterceptor)
             .addInterceptor(httpLoggingInterceptor)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .writeTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
             .build()
 
         return Retrofit.Builder()

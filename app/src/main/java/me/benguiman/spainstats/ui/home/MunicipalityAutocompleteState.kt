@@ -3,7 +3,7 @@ package me.benguiman.spainstats.ui.home
 import java.text.Normalizer
 
 class MunicipalityAutocompleteState(private val municipalityList: List<MunicipalityUiState>) {
-    fun filterMunicipalityList(selectedOptionText: String): List<MunicipalityUiState> {
+    fun filterMunicipalityList(selectedOptionText: String) : List<MunicipalityUiState> {
         if (selectedOptionText.isEmpty()) {
             return emptyList()
         }

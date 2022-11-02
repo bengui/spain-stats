@@ -3,6 +3,7 @@ package me.benguiman.spainstats.data.network
 interface DataSeries {
     val variables: List<VariableValue>
     val headlineVariable: VariableValue
+    val dataType: DataType
 }
 
 object PercentageOfPopulationOf65OrMoreSeries : DataSeries {
@@ -11,6 +12,7 @@ object PercentageOfPopulationOf65OrMoreSeries : DataSeries {
         BaseData
     )
     override val headlineVariable = PercentageOfPopulation65OrMore
+    override val dataType = DataType.PERCENTAGE
 }
 
 object PercentageOfPopulationYoungerThan18Series : DataSeries {
@@ -19,6 +21,7 @@ object PercentageOfPopulationYoungerThan18Series : DataSeries {
         BaseData
     )
     override val headlineVariable = PercentageOfPopulation18OrYounger
+    override val dataType = DataType.PERCENTAGE
 }
 
 object AverageGrossHomeIncomeSeries : DataSeries {
@@ -27,6 +30,7 @@ object AverageGrossHomeIncomeSeries : DataSeries {
         BaseData
     )
     override val headlineVariable = GrossIncomePerHome
+    override val dataType = DataType.MONETARY
 }
 
 object AverageGrossPersonIncomeSeries : DataSeries {
@@ -35,6 +39,7 @@ object AverageGrossPersonIncomeSeries : DataSeries {
         BaseData
     )
     override val headlineVariable = GrossIncomePerPerson
+    override val dataType = DataType.MONETARY
 }
 
 object AveragePopulationAgeSeries : DataSeries {
@@ -43,6 +48,7 @@ object AveragePopulationAgeSeries : DataSeries {
         BaseData
     )
     override val headlineVariable = AveragePopulationAge
+    override val dataType = DataType.DOUBLE
 }
 
 object IpvaAnnualVariation : DataSeries {
@@ -52,4 +58,5 @@ object IpvaAnnualVariation : DataSeries {
         TotalOfHomeTypes
     )
     override val headlineVariable = AnnualVariation
+    override val dataType = DataType.DOUBLE
 }

@@ -1,4 +1,6 @@
-package me.benguiman.spainstats
+package me.benguiman.spainstats.ui
+
+import me.benguiman.spainstats.data.network.DataType
 
 data class MunicipalityStatReport(
     val municipalityName: String,
@@ -7,5 +9,6 @@ data class MunicipalityStatReport(
 
 data class MunicipalityStat(
     val name: String,
-    val value: Double
+    val value: Double,
+    val dataType: DataType
 )

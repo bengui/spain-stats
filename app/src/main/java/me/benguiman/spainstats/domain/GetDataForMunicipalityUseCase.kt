@@ -2,8 +2,8 @@ package me.benguiman.spainstats.domain
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import me.benguiman.spainstats.MunicipalityStat
-import me.benguiman.spainstats.MunicipalityStatReport
+import me.benguiman.spainstats.ui.MunicipalityStat
+import me.benguiman.spainstats.ui.MunicipalityStatReport
 import me.benguiman.spainstats.data.LocationsRepository
 import me.benguiman.spainstats.data.MunicipalityStatsRepository
 import me.benguiman.spainstats.data.network.*

@@ -3,9 +3,9 @@ package me.benguiman.spainstats.data
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import me.benguiman.spainstats.MunicipalityStat
 import me.benguiman.spainstats.data.network.*
 import me.benguiman.spainstats.di.IoDispatcher
+import me.benguiman.spainstats.ui.MunicipalityStat
 import javax.inject.Inject
 
 class MunicipalityStatsRepositoryImpl @Inject constructor(
@@ -89,14 +89,16 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             list
         }
 
-    private fun List<DataEntryDto>.mapToMunicipalityStatWithHeadlineCode(codeList: List<String>): List<MunicipalityStat> =
+    private fun List<DataEntryDto>.mapToMunicipalityStatWithHeadlineCode(codeList: List<HeadlineCode>): List<MunicipalityStat> =
         this.map {
+            val headlineCode = codeList.first { headlineCode ->
+                it.metadata.any { metadataDto -> headlineCode.headline == metadataDto.code }
+            }
             MunicipalityStat(
-                name = it.metadata.first { metadataDto ->
-                    codeList.any { code -> code == metadataDto.code }
-                }.name,
+                name = headlineCode.headline,
                 value = it.dataDto.first().value
-                    ?: throw IllegalStateException("data should not be empty")
+                    ?: throw IllegalStateException("data should not be empty"),
+                dataType = headlineCode.dataType
             )
         }
 
@@ -120,7 +122,8 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
                             && it.first.headlineVariable.variableId == metadataDto.variable.id
                 }.name,
                 value = it.second.dataDto.first().value
-                    ?: throw IllegalStateException("data should not be empty")
+                    ?: throw IllegalStateException("data should not be empty"),
+                dataType = it.first.dataType
             )
         }
 

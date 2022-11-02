@@ -62,6 +62,9 @@ abstract class HomeSize : VariableValue {
     }
 }
 
+enum class DataType {
+    INTEGER, DOUBLE, PERCENTAGE, MONETARY
+}
 
 // Values
 

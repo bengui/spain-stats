@@ -22,24 +22,20 @@ class HomeViewModel @Inject constructor(
     }
 
     private val _municipalityHomeUiState: MutableStateFlow<MunicipalityHomeUiState> =
-        MutableStateFlow(MunicipalityHomeUiState())
+        MutableStateFlow(MunicipalityHomeUiState(homeScreenStatus = HomeScreenLoading))
 
     val municipalityHomeUiState
         get() = _municipalityHomeUiState.asStateFlow()
 
     private var getProvincesAndMunicipalitiesJob: Job? = null
 
-    init {
-        getProvincesAndMunicipalities()
-    }
-
-    private fun getProvincesAndMunicipalities() {
+    fun getProvincesAndMunicipalities() {
         getProvincesAndMunicipalitiesJob?.cancel()
 
         getProvincesAndMunicipalitiesJob = viewModelScope.launch {
             try {
                 _municipalityHomeUiState.update {
-                    MunicipalityHomeUiState(loading = true)
+                    MunicipalityHomeUiState(homeScreenStatus = HomeScreenLoading)
                 }
 
                 val provinceList = getProvincesAndMunicipalitiesUseCase()
@@ -72,13 +68,14 @@ class HomeViewModel @Inject constructor(
                 _municipalityHomeUiState.update {
                     MunicipalityHomeUiState(
                         provinceMunicipalityList = items,
-                        municipalityList = municipalityList
+                        municipalityList = municipalityList,
+                        homeScreenStatus = HomeScreenSuccess
                     )
                 }
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: e.toString())
                 _municipalityHomeUiState.update {
-                    MunicipalityHomeUiState(errorMessage = "Error retrieving Municipality")
+                    MunicipalityHomeUiState(homeScreenStatus = HomeScreenError)
                 }
             }
         }

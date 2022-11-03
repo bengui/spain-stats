@@ -3,9 +3,13 @@ package me.benguiman.spainstats.ui.home
 data class MunicipalityHomeUiState(
     val provinceMunicipalityList: List<ProvinceMunicipalityListItem> = emptyList(),
     val municipalityList: List<MunicipalityUiState> = emptyList(),
-    val errorMessage: String = "",
-    val loading: Boolean = false,
+    val homeScreenStatus : HomeScreenStatus
 )
+
+sealed class HomeScreenStatus
+object HomeScreenError : HomeScreenStatus()
+object HomeScreenLoading : HomeScreenStatus()
+object HomeScreenSuccess : HomeScreenStatus()
 
 data class ProvinceMunicipalityListItem(
     val id: Int = -1,

@@ -24,6 +24,7 @@ fun StatsNavHost(
     ) {
         composable(route = Home.route) {
             HomeScreen(
+                showSnackBar = showSnackBar,
                 onMunicipalityClickListener = { municipality ->
                     navHostController.navigateToMunicipality(municipality.id, municipality.code)
                 })

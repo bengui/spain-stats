@@ -11,30 +11,59 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 import me.benguiman.spainstats.R
+import me.benguiman.spainstats.ui.StatsSnackbarData
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
+    showSnackBar: (StatsSnackbarData) -> Unit,
     onMunicipalityClickListener: (MunicipalityUiState) -> Unit = {},
+    viewModel: HomeViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
     val municipalityStatsUiState by viewModel.municipalityHomeUiState.collectAsState()
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        viewModel.getProvincesAndMunicipalities()
+    }
 
-    if (municipalityStatsUiState.errorMessage.isNotEmpty()) {
-        Text(text = municipalityStatsUiState.errorMessage, modifier = modifier.padding(8.dp))
-    } else if (municipalityStatsUiState.loading) {
-        Text(stringResource(id = R.string.loading_data), modifier = modifier.padding(8.dp))
-    } else {
-        MunicipalityAutocompleteField(
-            municipalityList = municipalityStatsUiState.municipalityList,
-            onMunicipalitySelected = onMunicipalityClickListener,
+    when (municipalityStatsUiState.homeScreenStatus) {
+        HomeScreenError -> {
+            val context = LocalContext.current
+            LaunchedEffect(Unit) {
+                showSnackBar(
+                    StatsSnackbarData(
+                        message = context.getString(R.string.error_retrieving_locations_list),
+                        actionLabel = context.getString(R.string.retry_button),
+                        withDismissAction = false,
+                        isError = true,
+                        onAction = {
+                            scope.launch {
+                                viewModel.getProvincesAndMunicipalities()
+                            }
+                        }
+                    )
+                )
+            }
+        }
+
+        HomeScreenLoading -> Text(
+            stringResource(id = R.string.loading_data),
             modifier = modifier.padding(8.dp)
         )
+        HomeScreenSuccess -> {
+            MunicipalityAutocompleteField(
+                municipalityList = municipalityStatsUiState.municipalityList,
+                onMunicipalitySelected = onMunicipalityClickListener,
+                modifier = modifier.padding(8.dp)
+            )
+        }
     }
 }
 
@@ -74,7 +103,8 @@ fun MunicipalityAutocompleteField(
 ) {
     var selectedOptionText by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
-    val municipalityAutocompleteState = remember { MunicipalityAutocompleteState(municipalityList) }
+    val municipalityAutocompleteState =
+        remember { MunicipalityAutocompleteState(municipalityList) }
     val options by produceState<List<MunicipalityUiState>>(
         key1 = selectedOptionText,
         initialValue = emptyList()

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Spain Stats</string>
+    <string name="home_title">Estadísticas España</string>
+    <string name="municipality_title">Municipalidad</string>
+    <string name="loading_data">Cargando datos…</string>
+    <string name="retry_button">Reintentar</string>
+    <string name="municipality_no_data_error">No hay datos para la municipalidad</string>
+    <string name="municipality_response_error">Error obteniendo los datos</string>
+    <string name="navigate_back_content_description">Navegar atras</string>
+    <string name="error_retrieving_locations_list">Error obteniendo municipalidades</string>
+</resources>

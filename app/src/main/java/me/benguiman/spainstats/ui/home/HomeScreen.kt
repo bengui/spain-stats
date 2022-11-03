@@ -145,9 +145,6 @@ fun MunicipalityAutocompleteField(
                 selectedOptionText = it
             },
             label = { Text(stringResource(R.string.municipality_title)) },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             maxLines = 1,
             keyboardOptions = KeyboardOptions.Default.copy(

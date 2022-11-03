@@ -58,9 +58,10 @@ fun HomeScreen(
             modifier = modifier.padding(8.dp)
         )
         HomeScreenSuccess -> {
+
             MunicipalityAutocompleteField(
-                municipalityList = municipalityStatsUiState.municipalityList,
                 onMunicipalitySelected = onMunicipalityClickListener,
+                municipalityHomeUiState = municipalityStatsUiState,
                 modifier = modifier.padding(8.dp)
             )
         }
@@ -97,20 +98,20 @@ fun ProvinceMunicipalityList(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MunicipalityAutocompleteField(
-    municipalityList: List<MunicipalityUiState>,
     onMunicipalitySelected: (MunicipalityUiState) -> Unit = {},
+    municipalityHomeUiState: MunicipalityHomeUiState,
     modifier: Modifier = Modifier
 ) {
-    var selectedOptionText by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(true) }
     val municipalityAutocompleteState =
-        remember { MunicipalityAutocompleteState(municipalityList) }
-    val options by produceState<List<MunicipalityUiState>>(
+        remember { MunicipalityAutocompleteState(municipalityHomeUiState.municipalityList) }
+    var selectedOptionText by remember { mutableStateOf("") }
+    val municipalityList by produceState<List<MunicipalityUiState>>(
         key1 = selectedOptionText,
         initialValue = emptyList()
     ) {
         value = municipalityAutocompleteState.filterMunicipalityList(selectedOptionText).also {
-            expanded = it.isNotEmpty()
+            expanded = true
         }
     }
 
@@ -123,8 +124,8 @@ fun MunicipalityAutocompleteField(
     ) {
         TextField(
             value = selectedOptionText,
-            onValueChange = { newValue ->
-                selectedOptionText = newValue
+            onValueChange = {
+                selectedOptionText = it
             },
             label = { Text(stringResource(R.string.municipality_title)) },
             trailingIcon = {
@@ -137,22 +138,27 @@ fun MunicipalityAutocompleteField(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    options.firstOrNull()?.let { onMunicipalitySelected(it) }
+                    municipalityList.firstOrNull()?.let { onMunicipalitySelected(it) }
                 }
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor()
         )
-        if (options.isNotEmpty()) {
-            ExposedDropdownMenu(expanded = expanded,
-                onDismissRequest = { expanded = false }
+        if (municipalityList.isNotEmpty()) {
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.exposedDropdownSize(false)
             ) {
-                options.forEach { municipality ->
-                    DropdownMenuItem(text = { Text(municipality.name) },
+                municipalityList.forEach { municipality ->
+                    DropdownMenuItem(
+                        text = { Text(municipality.name) },
                         onClick = {
-                            selectedOptionText = municipality.name
-                            expanded = false
                             onMunicipalitySelected(municipality)
-                        })
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    )
                 }
             }
         }

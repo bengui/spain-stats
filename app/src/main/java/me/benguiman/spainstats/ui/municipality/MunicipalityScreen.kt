@@ -1,15 +1,15 @@
 package me.benguiman.spainstats.ui.municipality
 
 import android.icu.text.NumberFormat
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -37,42 +37,59 @@ fun MunicipalityScreen(
         viewModel.getMunicipalityStats()
     }
     DisposableEffect(Unit) { onDispose { dismissSnackBar() } }
-
-    if (municipalityStatUiState.loading) {
-        Text(stringResource(id = R.string.loading_data), modifier = modifier.padding(8.dp))
-    } else if (municipalityStatUiState.error != null) {
-        val context = LocalContext.current
-        LaunchedEffect(Unit) {
-            val error = municipalityStatUiState.error
-            val errorMessage = when (error) {
-                is NoDataError -> context.getString(R.string.municipality_no_data_error)
-                else -> context.getString(R.string.municipality_response_error)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 8.dp)
+    ) {
+        if (municipalityStatUiState.loading) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxHeight()
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CircularProgressIndicator()
+                    Text(
+                        stringResource(id = R.string.loading_data),
+                        modifier = modifier.padding(16.dp)
+                    )
+                }
             }
-            val actionLabel = if (error != NoDataError) {
-                context.getString(R.string.retry_button)
-            } else {
-                null
-            }
-            showSnackBar(
-                StatsSnackbarData(
-                    message = errorMessage,
-                    isError = true,
-                    withDismissAction = false,
-                    actionLabel = actionLabel,
-                    onAction = {
-                        scope.launch {
-                            viewModel.getMunicipalityStats()
+        } else if (municipalityStatUiState.error != null) {
+            val context = LocalContext.current
+            LaunchedEffect(Unit) {
+                val error = municipalityStatUiState.error
+                val errorMessage = when (error) {
+                    is NoDataError -> context.getString(R.string.municipality_no_data_error)
+                    else -> context.getString(R.string.municipality_response_error)
+                }
+                val actionLabel = if (error != NoDataError) {
+                    context.getString(R.string.retry_button)
+                } else {
+                    null
+                }
+                showSnackBar(
+                    StatsSnackbarData(
+                        message = errorMessage,
+                        isError = true,
+                        withDismissAction = false,
+                        actionLabel = actionLabel,
+                        onAction = {
+                            scope.launch {
+                                viewModel.getMunicipalityStats()
+                            }
                         }
-                    }
+                    )
                 )
+            }
+        } else {
+            MunicipalityStats(
+                municipalityName = municipalityStatUiState.municipalityName,
+                municipalityStatList = municipalityStatUiState.municipalityStatList,
+                modifier = modifier
             )
         }
-    } else {
-        MunicipalityStats(
-            municipalityName = municipalityStatUiState.municipalityName,
-            municipalityStatList = municipalityStatUiState.municipalityStatList,
-            modifier = modifier
-        )
     }
 }
 
@@ -82,16 +99,14 @@ fun MunicipalityStats(
     municipalityStatList: List<MunicipalityStat> = emptyList(),
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.padding(horizontal = 8.dp)) {
-        Text(
-            text = municipalityName,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = modifier.padding(vertical = 8.dp)
-        )
-        LazyColumn {
-            items(municipalityStatList) {
-                MunicipalityStatsCard(it)
-            }
+    Text(
+        text = municipalityName,
+        style = MaterialTheme.typography.headlineMedium,
+        modifier = modifier.padding(vertical = 8.dp)
+    )
+    LazyColumn {
+        items(municipalityStatList) {
+            MunicipalityStatsCard(it)
         }
     }
 }
@@ -128,7 +143,7 @@ fun formatValue(municipalityStat: MunicipalityStat): String {
         DataType.INTEGER -> numberFormat.format(municipalityStat.value.toInt())
         DataType.DOUBLE -> numberFormat.format(municipalityStat.value)
         DataType.MONETARY -> currencyFormat.format((municipalityStat.value.toInt()))
-        DataType.PERCENTAGE -> percentageFormat.format(municipalityStat.value/100)
+        DataType.PERCENTAGE -> percentageFormat.format(municipalityStat.value / 100)
     }
 }
 

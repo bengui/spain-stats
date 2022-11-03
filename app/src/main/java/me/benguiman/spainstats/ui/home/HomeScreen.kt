@@ -1,15 +1,14 @@
 package me.benguiman.spainstats.ui.home
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -32,38 +31,53 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         viewModel.getProvincesAndMunicipalities()
     }
-
-    when (municipalityStatsUiState.homeScreenStatus) {
-        HomeScreenError -> {
-            val context = LocalContext.current
-            LaunchedEffect(Unit) {
-                showSnackBar(
-                    StatsSnackbarData(
-                        message = context.getString(R.string.error_retrieving_locations_list),
-                        actionLabel = context.getString(R.string.retry_button),
-                        withDismissAction = false,
-                        isError = true,
-                        onAction = {
-                            scope.launch {
-                                viewModel.getProvincesAndMunicipalities()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        when (municipalityStatsUiState.homeScreenStatus) {
+            HomeScreenError -> {
+                val context = LocalContext.current
+                LaunchedEffect(Unit) {
+                    showSnackBar(
+                        StatsSnackbarData(
+                            message = context.getString(R.string.error_retrieving_locations_list),
+                            actionLabel = context.getString(R.string.retry_button),
+                            withDismissAction = false,
+                            isError = true,
+                            onAction = {
+                                scope.launch {
+                                    viewModel.getProvincesAndMunicipalities()
+                                }
                             }
-                        }
+                        )
                     )
+                }
+            }
+
+            HomeScreenLoading -> {
+                Row(
+                    verticalAlignment = CenterVertically,
+                    modifier = Modifier.fillMaxHeight()
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        CircularProgressIndicator()
+                        Text(
+                            stringResource(id = R.string.loading_data),
+                            modifier = modifier.padding(16.dp)
+                        )
+                    }
+                }
+            }
+            HomeScreenSuccess -> {
+
+                MunicipalityAutocompleteField(
+                    onMunicipalitySelected = onMunicipalityClickListener,
+                    municipalityHomeUiState = municipalityStatsUiState,
+                    modifier = modifier.padding(8.dp)
                 )
             }
-        }
-
-        HomeScreenLoading -> Text(
-            stringResource(id = R.string.loading_data),
-            modifier = modifier.padding(8.dp)
-        )
-        HomeScreenSuccess -> {
-
-            MunicipalityAutocompleteField(
-                onMunicipalitySelected = onMunicipalityClickListener,
-                municipalityHomeUiState = municipalityStatsUiState,
-                modifier = modifier.padding(8.dp)
-            )
         }
     }
 }
@@ -95,6 +109,9 @@ fun ProvinceMunicipalityList(
     }
 }
 
+/**
+ * https://github.com/androidx/androidx/blob/bea0ae031bd927b686fafd70c6f448b7c48da23d/compose/material3/material3/samples/src/main/java/androidx/compose/material3/samples/ExposedDropdownMenuSamples.kt
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MunicipalityAutocompleteField(

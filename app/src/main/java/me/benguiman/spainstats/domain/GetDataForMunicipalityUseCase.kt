@@ -2,12 +2,12 @@ package me.benguiman.spainstats.domain
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import me.benguiman.spainstats.ui.MunicipalityStat
-import me.benguiman.spainstats.ui.MunicipalityStatReport
 import me.benguiman.spainstats.data.LocationsRepository
 import me.benguiman.spainstats.data.MunicipalityStatsRepository
-import me.benguiman.spainstats.data.network.*
 import me.benguiman.spainstats.di.MainDispatcher
+import me.benguiman.spainstats.domain.models.*
+import me.benguiman.spainstats.ui.MunicipalityStat
+import me.benguiman.spainstats.ui.MunicipalityStatReport
 import javax.inject.Inject
 
 class GetDataForMunicipalityUseCase @Inject constructor(
@@ -20,6 +20,7 @@ class GetDataForMunicipalityUseCase @Inject constructor(
         municipalityCode: String
     ): MunicipalityStatReport {
         return withContext(coroutineDispatcher) {
+            // TODO Create "report" entity to specify how to display the data.
 
             val municipalityStats = mutableListOf<MunicipalityStat>()
             municipalityStats.addAll(
@@ -32,14 +33,14 @@ class GetDataForMunicipalityUseCase @Inject constructor(
                         AverageGrossHomeIncomeSeries,
                         AverageGrossPersonIncomeSeries,
                         AveragePopulationAgeSeries
-                    )
+                    ).map { it.value }
             )
 
             municipalityStats.addAll(
                 municipalityStatsRepository.getTableDataByMunicipality(
-                    tableData = BuildingsAndRealState,
+                    tableData = BuildingsAndRealStateTableData,
                     municipalityCode = municipalityCode
-                )
+                ).map { it.value }
             )
 
             municipalityStats.addAll(
@@ -47,7 +48,7 @@ class GetDataForMunicipalityUseCase @Inject constructor(
                     operation = IpvaOperation,
                     municipalityId = municipalityId,
                     IpvaAnnualVariation
-                )
+                ).map { it.value }
             )
 
             MunicipalityStatReport(

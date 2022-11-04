@@ -1,6 +1,6 @@
 package me.benguiman.spainstats.ui
 
-import me.benguiman.spainstats.data.network.DataType
+import me.benguiman.spainstats.domain.models.DataType
 
 data class MunicipalityStatReport(
     val municipalityName: String,

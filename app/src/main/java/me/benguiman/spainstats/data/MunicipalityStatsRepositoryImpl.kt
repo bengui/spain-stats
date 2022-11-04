@@ -3,8 +3,10 @@ package me.benguiman.spainstats.data
 import androidx.annotation.VisibleForTesting
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import me.benguiman.spainstats.data.network.*
+import me.benguiman.spainstats.data.network.DataEntryDto
+import me.benguiman.spainstats.data.network.IneService
 import me.benguiman.spainstats.di.IoDispatcher
+import me.benguiman.spainstats.domain.models.*
 import me.benguiman.spainstats.ui.MunicipalityStat
 import javax.inject.Inject
 
@@ -17,7 +19,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
         operation: Operation,
         municipalityId: Int,
         vararg series: DataSeries
-    ): List<MunicipalityStat> {
+    ): Map<DataSeries, MunicipalityStat> {
         return getDataByOperationFilterByVariable(
             operation = operation,
             variableId = MunicipalityVariable.ID,
@@ -29,7 +31,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
     override suspend fun getTableDataByMunicipality(
         tableData: TableData,
         municipalityCode: String
-    ): List<MunicipalityStat> {
+    ): Map<HeadlineCode, MunicipalityStat> {
         return withContext(coroutineDispatcher) {
             ineService.getTableData(tableId = tableData.id)
                 .filterNameByMunicipalityId(municipalityCode)
@@ -43,7 +45,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
         variableId: Int,
         variableValue: Int,
         series: List<DataSeries>
-    ): List<MunicipalityStat> {
+    ): Map<DataSeries, MunicipalityStat> {
         return withContext(coroutineDispatcher) {
             val variableValueSet =
                 mutableSetOf<VariableValue>(GenericVariable(variableId, variableValue))
@@ -89,11 +91,12 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             list
         }
 
-    private fun List<DataEntryDto>.mapToMunicipalityStatWithHeadlineCode(codeList: List<HeadlineCode>): List<MunicipalityStat> =
-        this.map {
+    private fun List<DataEntryDto>.mapToMunicipalityStatWithHeadlineCode(codeList: List<HeadlineCode>): Map<HeadlineCode, MunicipalityStat> =
+        this.associate {
             val headlineCode = codeList.first { headlineCode ->
                 it.metadata.any { metadataDto -> headlineCode.headline == metadataDto.code }
             }
+            headlineCode to
             MunicipalityStat(
                 name = headlineCode.headline,
                 value = it.dataDto.first().value
@@ -114,17 +117,18 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             } to dataEntryDto
         }
 
-    private fun List<Pair<DataSeries, DataEntryDto>>.mapDataSeriesDataEntryDtoToMunicipalityStat(): List<MunicipalityStat> =
-        this.map {
-            MunicipalityStat(
-                name = it.second.metadata.first { metadataDto ->
-                    it.first.headlineVariable.value == metadataDto.id
-                            && it.first.headlineVariable.variableId == metadataDto.variable.id
-                }.name,
-                value = it.second.dataDto.first().value
-                    ?: throw IllegalStateException("data should not be empty"),
-                dataType = it.first.dataType
-            )
+    private fun List<Pair<DataSeries, DataEntryDto>>.mapDataSeriesDataEntryDtoToMunicipalityStat(): Map<DataSeries, MunicipalityStat> =
+        this.associate {
+            it.first to
+                    MunicipalityStat(
+                        name = it.second.metadata.first { metadataDto ->
+                            it.first.headlineVariable.value == metadataDto.id
+                                    && it.first.headlineVariable.variableId == metadataDto.variable.id
+                        }.name,
+                        value = it.second.dataDto.first().value
+                            ?: throw IllegalStateException("data should not be empty"),
+                        dataType = it.first.dataType
+                    )
         }
 
     private fun List<DataEntryDto>.filterEmptyData() =

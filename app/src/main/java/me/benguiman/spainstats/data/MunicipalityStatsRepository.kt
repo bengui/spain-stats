@@ -1,9 +1,10 @@
 package me.benguiman.spainstats.data
 
+import me.benguiman.spainstats.domain.models.DataSeries
+import me.benguiman.spainstats.domain.models.HeadlineCode
+import me.benguiman.spainstats.domain.models.Operation
+import me.benguiman.spainstats.domain.models.TableData
 import me.benguiman.spainstats.ui.MunicipalityStat
-import me.benguiman.spainstats.data.network.DataSeries
-import me.benguiman.spainstats.data.network.Operation
-import me.benguiman.spainstats.data.network.TableData
 
 interface MunicipalityStatsRepository {
 
@@ -11,10 +12,10 @@ interface MunicipalityStatsRepository {
         operation: Operation,
         municipalityId: Int,
         vararg series: DataSeries
-    ): List<MunicipalityStat>
+    ): Map<DataSeries, MunicipalityStat>
 
     suspend fun getTableDataByMunicipality(
         tableData: TableData,
         municipalityCode: String
-    ): List<MunicipalityStat>
+    ): Map<HeadlineCode, MunicipalityStat>
 }

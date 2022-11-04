@@ -1,4 +1,4 @@
-package me.benguiman.spainstats.data.network
+package me.benguiman.spainstats.domain.models
 
 interface DataSeries {
     val variables: List<VariableValue>

@@ -8,16 +8,16 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.benguiman.spainstats.R
-import me.benguiman.spainstats.ui.StatsSnackbarData
+import me.benguiman.spainstats.ui.*
 
 @Composable
 fun HomeScreen(
@@ -36,49 +36,39 @@ fun HomeScreen(
         modifier = modifier
             .fillMaxSize()
     ) {
-        when (municipalityStatsUiState.homeScreenStatus) {
-            HomeScreenError -> {
-                val context = LocalContext.current
-                LaunchedEffect(Unit) {
-                    showSnackBar(
-                        StatsSnackbarData(
-                            message = context.getString(R.string.error_retrieving_locations_list),
-                            actionLabel = context.getString(R.string.retry_button),
-                            withDismissAction = false,
-                            isError = true,
-                            onAction = {
-                                scope.launch {
-                                    viewModel.getProvincesAndMunicipalities()
-                                }
-                            }
-                        )
-                    )
-                }
-            }
+        when (municipalityStatsUiState.screenStatus) {
+            ScreenLoading -> SpainStatsCircularProgressIndicator(modifier)
+            ScreenError -> processError(showSnackBar, scope, viewModel)
+            ScreenSuccess -> MunicipalityAutocompleteField(
+                onMunicipalitySelected = onMunicipalityClickListener,
+                municipalityHomeUiState = municipalityStatsUiState,
+                modifier = modifier.padding(8.dp)
+            )
+        }
+    }
+}
 
-            HomeScreenLoading -> {
-                Row(
-                    verticalAlignment = CenterVertically,
-                    modifier = Modifier.fillMaxHeight()
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator()
-                        Text(
-                            stringResource(id = R.string.loading_data),
-                            modifier = modifier.padding(16.dp)
-                        )
+@Composable
+private fun processError(
+    showSnackBar: (StatsSnackbarData) -> Unit,
+    scope: CoroutineScope,
+    viewModel: HomeViewModel
+) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        showSnackBar(
+            StatsSnackbarData(
+                message = context.getString(R.string.error_retrieving_locations_list),
+                actionLabel = context.getString(R.string.retry_button),
+                withDismissAction = false,
+                isError = true,
+                onAction = {
+                    scope.launch {
+                        viewModel.getProvincesAndMunicipalities()
                     }
                 }
-            }
-            HomeScreenSuccess -> {
-
-                MunicipalityAutocompleteField(
-                    onMunicipalitySelected = onMunicipalityClickListener,
-                    municipalityHomeUiState = municipalityStatsUiState,
-                    modifier = modifier.padding(8.dp)
-                )
-            }
-        }
+            )
+        )
     }
 }
 

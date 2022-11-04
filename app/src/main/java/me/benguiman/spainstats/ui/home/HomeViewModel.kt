@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.benguiman.spainstats.data.Municipality
 import me.benguiman.spainstats.domain.GetProvincesAndMunicipalitiesUseCase
+import me.benguiman.spainstats.ui.ScreenError
+import me.benguiman.spainstats.ui.ScreenLoading
+import me.benguiman.spainstats.ui.ScreenSuccess
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,7 +25,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private val _municipalityHomeUiState: MutableStateFlow<MunicipalityHomeUiState> =
-        MutableStateFlow(MunicipalityHomeUiState(homeScreenStatus = HomeScreenLoading))
+        MutableStateFlow(MunicipalityHomeUiState(screenStatus = ScreenLoading))
 
     val municipalityHomeUiState
         get() = _municipalityHomeUiState.asStateFlow()
@@ -35,7 +38,7 @@ class HomeViewModel @Inject constructor(
         getProvincesAndMunicipalitiesJob = viewModelScope.launch {
             try {
                 _municipalityHomeUiState.update {
-                    MunicipalityHomeUiState(homeScreenStatus = HomeScreenLoading)
+                    MunicipalityHomeUiState(screenStatus = ScreenLoading)
                 }
 
                 val provinceList = getProvincesAndMunicipalitiesUseCase()
@@ -69,13 +72,13 @@ class HomeViewModel @Inject constructor(
                     MunicipalityHomeUiState(
                         provinceMunicipalityList = items,
                         municipalityList = municipalityList,
-                        homeScreenStatus = HomeScreenSuccess
+                        screenStatus = ScreenSuccess
                     )
                 }
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: e.toString())
                 _municipalityHomeUiState.update {
-                    MunicipalityHomeUiState(homeScreenStatus = HomeScreenError)
+                    MunicipalityHomeUiState(screenStatus = ScreenError)
                 }
             }
         }

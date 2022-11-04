@@ -17,11 +17,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import me.benguiman.spainstats.ui.MunicipalityStat
 import me.benguiman.spainstats.R
 import me.benguiman.spainstats.data.network.DataType
-import me.benguiman.spainstats.ui.StatsSnackbarData
+import me.benguiman.spainstats.ui.*
 import java.util.*
 
 @Composable
@@ -43,53 +43,50 @@ fun MunicipalityScreen(
             .fillMaxSize()
             .padding(horizontal = 8.dp)
     ) {
-        if (municipalityStatUiState.loading) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxHeight()
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircularProgressIndicator()
-                    Text(
-                        stringResource(id = R.string.loading_data),
-                        modifier = modifier.padding(16.dp)
-                    )
-                }
-            }
-        } else if (municipalityStatUiState.error != null) {
-            val context = LocalContext.current
-            LaunchedEffect(Unit) {
-                val error = municipalityStatUiState.error
-                val errorMessage = when (error) {
-                    is NoDataError -> context.getString(R.string.municipality_no_data_error)
-                    else -> context.getString(R.string.municipality_response_error)
-                }
-                val actionLabel = if (error != NoDataError) {
-                    context.getString(R.string.retry_button)
-                } else {
-                    null
-                }
-                showSnackBar(
-                    StatsSnackbarData(
-                        message = errorMessage,
-                        isError = true,
-                        withDismissAction = false,
-                        actionLabel = actionLabel,
-                        onAction = {
-                            scope.launch {
-                                viewModel.getMunicipalityStats()
-                            }
-                        }
-                    )
-                )
-            }
-        } else {
-            MunicipalityStats(
+        when (municipalityStatUiState.screenStatus) {
+            ScreenLoading -> SpainStatsCircularProgressIndicator(modifier)
+            ScreenError -> processError(municipalityStatUiState, showSnackBar, scope, viewModel)
+            ScreenSuccess -> MunicipalityStats(
                 municipalityName = municipalityStatUiState.municipalityName,
                 municipalityStatList = municipalityStatUiState.municipalityStatList,
                 modifier = modifier
             )
         }
+    }
+}
+
+@Composable
+private fun processError(
+    municipalityStatUiState: MunicipalityStatUiState,
+    showSnackBar: (StatsSnackbarData) -> Unit,
+    scope: CoroutineScope,
+    viewModel: MunicipalityStatsViewModel
+) {
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        val error = municipalityStatUiState.error
+        val errorMessage = when (error) {
+            is NoDataError -> context.getString(R.string.municipality_no_data_error)
+            else -> context.getString(R.string.municipality_response_error)
+        }
+        val actionLabel = if (error != NoDataError) {
+            context.getString(R.string.retry_button)
+        } else {
+            null
+        }
+        showSnackBar(
+            StatsSnackbarData(
+                message = errorMessage,
+                isError = true,
+                withDismissAction = false,
+                actionLabel = actionLabel,
+                onAction = {
+                    scope.launch {
+                        viewModel.getMunicipalityStats()
+                    }
+                }
+            )
+        )
     }
 }
 

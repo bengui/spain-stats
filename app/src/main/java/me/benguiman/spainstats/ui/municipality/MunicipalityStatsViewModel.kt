@@ -12,6 +12,9 @@ import kotlinx.coroutines.launch
 import me.benguiman.spainstats.Municipality.municipalityCodeArg
 import me.benguiman.spainstats.Municipality.municipalityIdArg
 import me.benguiman.spainstats.domain.GetDataForMunicipalityUseCase
+import me.benguiman.spainstats.ui.ScreenError
+import me.benguiman.spainstats.ui.ScreenLoading
+import me.benguiman.spainstats.ui.ScreenSuccess
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,8 +30,8 @@ class MunicipalityStatsViewModel @Inject constructor(
     private val _municipalityStatUiState: MutableStateFlow<MunicipalityStatUiState> =
         MutableStateFlow(
             MunicipalityStatUiState(
-                loading = false,
-                municipalityStatList = emptyList()
+                municipalityStatList = emptyList(),
+                screenStatus = ScreenLoading
             )
         )
 
@@ -40,8 +43,8 @@ class MunicipalityStatsViewModel @Inject constructor(
         viewModelScope.launch {
             _municipalityStatUiState.update {
                 MunicipalityStatUiState(
-                    loading = true,
-                    municipalityStatList = emptyList()
+                    municipalityStatList = emptyList(),
+                    screenStatus = ScreenLoading
                 )
             }
             try {
@@ -55,16 +58,16 @@ class MunicipalityStatsViewModel @Inject constructor(
                 if (municipalityStatReport.municipalityStatList.isNotEmpty()) {
                     _municipalityStatUiState.update {
                         MunicipalityStatUiState(
-                            loading = false,
                             municipalityStatList = municipalityStatReport.municipalityStatList,
-                            municipalityName = municipalityStatReport.municipalityName
+                            municipalityName = municipalityStatReport.municipalityName,
+                            screenStatus = ScreenSuccess
                         )
                     }
                 } else {
                     _municipalityStatUiState.update {
                         MunicipalityStatUiState(
-                            loading = false,
-                            error = NoDataError
+                            error = NoDataError,
+                            screenStatus = ScreenError
                         )
                     }
                 }
@@ -72,8 +75,8 @@ class MunicipalityStatsViewModel @Inject constructor(
                 Log.e(TAG, e.message ?: e.toString())
                 _municipalityStatUiState.update {
                     MunicipalityStatUiState(
-                        loading = false,
-                        error = ResponseError
+                        error = ResponseError,
+                        screenStatus = ScreenError
                     )
                 }
             }

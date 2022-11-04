@@ -1,15 +1,12 @@
 package me.benguiman.spainstats.ui.home
 
+import me.benguiman.spainstats.ui.ScreenStatus
+
 data class MunicipalityHomeUiState(
     val provinceMunicipalityList: List<ProvinceMunicipalityListItem> = emptyList(),
     val municipalityList: List<MunicipalityUiState> = emptyList(),
-    val homeScreenStatus : HomeScreenStatus
+    val screenStatus : ScreenStatus
 )
-
-sealed class HomeScreenStatus
-object HomeScreenError : HomeScreenStatus()
-object HomeScreenLoading : HomeScreenStatus()
-object HomeScreenSuccess : HomeScreenStatus()
 
 data class ProvinceMunicipalityListItem(
     val id: Int = -1,

@@ -48,7 +48,7 @@ object AveragePopulationAgeSeries : DataSeries {
         BaseData
     )
     override val headlineVariable = AveragePopulationAge
-    override val dataType = DataType.DOUBLE
+    override val dataType = DataType.INTEGER
 }
 
 object IpvaAnnualVariation : DataSeries {

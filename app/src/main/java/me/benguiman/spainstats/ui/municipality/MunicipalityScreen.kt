@@ -1,13 +1,14 @@
 package me.benguiman.spainstats.ui.municipality
 
 import android.icu.text.NumberFormat
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -25,6 +26,7 @@ import me.benguiman.spainstats.R
 import me.benguiman.spainstats.domain.models.DataType
 import me.benguiman.spainstats.ui.*
 import java.util.*
+import kotlin.math.roundToInt
 
 @Composable
 fun MunicipalityScreen(
@@ -106,9 +108,7 @@ fun MunicipalityStats(
     LazyColumn {
         items(municipalityStatList) { reportRowUi ->
             when (reportRowUi) {
-                is MultiElementRowUi -> {
-                    // TODO Generate multi element card
-                }
+                is MultiElementRowUi -> MunicipalityStatsMultiElementCard(reportRowUi)
                 is SimpleRowUi -> MunicipalityStatsCard(reportRowUi)
             }
         }
@@ -137,6 +137,70 @@ private fun MunicipalityStatsCard(
     }
 }
 
+@Composable
+private fun MunicipalityStatsMultiElementCard(
+    multiElementRowUi: MultiElementRowUi,
+    modifier: Modifier = Modifier
+) {
+    Card(modifier = modifier.padding(bottom = 8.dp)) {
+        Column(Modifier.padding(8.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Outlined.Person,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = stringResource(multiElementRowUi.title),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+            multiElementRowUi.statsList.forEach { statUi ->
+                Row {
+                    Text(
+                        text = stringResource(statUi.name),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                    Text(
+                        text = formatValue(statUi),
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                if (statUi.dataType == DataType.PERCENTAGE) {
+                    val primaryColor = MaterialTheme.colorScheme.primary
+                    val secondaryColor = MaterialTheme.colorScheme.primaryContainer
+                    val percentage = remember {
+                        (statUi.value * 360 / 100).toFloat()
+                    }
+                    Row {
+                        Canvas(
+                            modifier = Modifier
+                                .size(size = 100.dp)
+                        ) {
+                            drawArc(
+                                color = primaryColor,
+                                startAngle = 0f,
+                                sweepAngle = percentage,
+                                useCenter = true
+                            )
+                            drawArc(
+                                color = secondaryColor,
+                                startAngle = percentage,
+                                sweepAngle = 360f - percentage,
+                                useCenter = true
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 fun formatValue(municipalityStat: MunicipalityStatUi): String {
     val spainLocale = Locale("es", "ES")
     val numberFormat = NumberFormat.getInstance(spainLocale)
@@ -144,7 +208,7 @@ fun formatValue(municipalityStat: MunicipalityStatUi): String {
     currencyFormat.maximumFractionDigits = 0
     val percentageFormat = NumberFormat.getPercentInstance()
     return when (municipalityStat.dataType) {
-        DataType.INTEGER -> numberFormat.format(municipalityStat.value.toInt())
+        DataType.INTEGER -> numberFormat.format(municipalityStat.value.roundToInt())
         DataType.DOUBLE -> numberFormat.format(municipalityStat.value)
         DataType.MONETARY -> currencyFormat.format((municipalityStat.value.toInt()))
         DataType.PERCENTAGE -> percentageFormat.format(municipalityStat.value / 100)

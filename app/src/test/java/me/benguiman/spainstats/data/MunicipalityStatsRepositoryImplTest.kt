@@ -42,7 +42,7 @@ class MunicipalityStatsRepositoryImplTest {
                 )
             )
             assertEquals(1, adrhData.size)
-            assertEquals(AVERAGE_POPULATION_SIZE_TITLE, adrhData.first().name)
+            assertEquals(AVERAGE_POPULATION_SIZE_TITLE, adrhData.iterator().next().value.name)
         }
     }
 
@@ -77,7 +77,7 @@ class MockIneService : IneService {
         variableId: Int,
         page: Int
     ): List<VariableValueDto> {
-        TODO("Not yet implemented")
+        throw IllegalStateException()
     }
 
     override suspend fun getTableData(
@@ -85,7 +85,7 @@ class MockIneService : IneService {
         tableId: String,
         type: Type
     ): List<DataEntryDto> {
-        TODO("Not yet implemented")
+        throw IllegalStateException()
     }
 }
 

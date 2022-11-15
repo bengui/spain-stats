@@ -4,7 +4,7 @@ import me.benguiman.spainstats.domain.models.DataSeries
 import me.benguiman.spainstats.domain.models.HeadlineCode
 import me.benguiman.spainstats.domain.models.Operation
 import me.benguiman.spainstats.domain.models.TableData
-import me.benguiman.spainstats.ui.MunicipalityStat
+import me.benguiman.spainstats.domain.models.MunicipalityStat
 
 interface MunicipalityStatsRepository {
 

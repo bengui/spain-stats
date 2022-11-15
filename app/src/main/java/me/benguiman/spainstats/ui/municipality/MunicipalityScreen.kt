@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,7 @@ fun MunicipalityScreen(
             ScreenError -> processError(municipalityStatUiState, showSnackBar, scope, viewModel)
             ScreenSuccess -> MunicipalityStats(
                 municipalityName = municipalityStatUiState.municipalityName,
-                municipalityStatList = municipalityStatUiState.municipalityStatList,
+                municipalityStatList = municipalityStatUiState.municipalityStatReportRowUiList,
                 modifier = modifier
             )
         }
@@ -94,7 +95,7 @@ private fun processError(
 @Composable
 fun MunicipalityStats(
     municipalityName: String = "",
-    municipalityStatList: List<MunicipalityStat> = emptyList(),
+    municipalityStatList: List<ReportRowUi> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     Text(
@@ -103,26 +104,31 @@ fun MunicipalityStats(
         modifier = modifier.padding(vertical = 8.dp)
     )
     LazyColumn {
-        items(municipalityStatList) {
-            MunicipalityStatsCard(it)
+        items(municipalityStatList) { reportRowUi ->
+            when (reportRowUi) {
+                is MultiElementRowUi -> {
+                    // TODO Generate multi element card
+                }
+                is SimpleRowUi -> MunicipalityStatsCard(reportRowUi)
+            }
         }
     }
 }
 
 @Composable
 private fun MunicipalityStatsCard(
-    municipalityStat: MunicipalityStat,
+    simpleRowUi: SimpleRowUi,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier.padding(bottom = 8.dp)) {
         Column(Modifier.padding(8.dp)) {
             Text(
-                text = municipalityStat.name,
+                text = stringResource(simpleRowUi.statUi.name),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = 8.dp)
             )
             Text(
-                text = formatValue(municipalityStat),
+                text = formatValue(simpleRowUi.statUi),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.End,
                 modifier = Modifier.fillMaxWidth()
@@ -131,7 +137,7 @@ private fun MunicipalityStatsCard(
     }
 }
 
-fun formatValue(municipalityStat: MunicipalityStat): String {
+fun formatValue(municipalityStat: MunicipalityStatUi): String {
     val spainLocale = Locale("es", "ES")
     val numberFormat = NumberFormat.getInstance(spainLocale)
     val currencyFormat = NumberFormat.getCurrencyInstance(spainLocale)
@@ -150,10 +156,12 @@ fun formatValue(municipalityStat: MunicipalityStat): String {
 @Composable
 fun MunicipalityStatsCardPreview() {
     MunicipalityStatsCard(
-        MunicipalityStat(
-            name = "Berga. Variación anual. Total viviendas. Total.",
-            value = 1.8,
-            dataType = DataType.INTEGER
+        SimpleRowUi(
+            MunicipalityStatUi(
+                name = R.string.average_population_age,
+                value = 45.0,
+                dataType = DataType.INTEGER
+            )
         )
     )
 }
@@ -163,13 +171,23 @@ fun MunicipalityStatsCardPreview() {
 fun MunicipalityStatsPreview() {
     MunicipalityStats(
         "Berga", listOf(
-            MunicipalityStat(
-                "Berga. Variación anual. Total viviendas. Total.",
-                1.9,
-                DataType.INTEGER
+            SimpleRowUi(
+                MunicipalityStatUi(
+                    R.string.ipva_estate_annual_variation,
+                    1.9,
+                    DataType.INTEGER
+                )
             ),
-            MunicipalityStat("Berga. Índice. Total viviendas. Total.", 107.605, DataType.INTEGER),
-            MunicipalityStat("Berga. Ponderación.", 0.405, DataType.DOUBLE)
+            SimpleRowUi(
+                MunicipalityStatUi(
+                    R.string.buildings_count,
+                    107.605,
+                    DataType.INTEGER
+                )
+            ),
+            SimpleRowUi(
+                MunicipalityStatUi(R.string.estate_count, 0.405, DataType.DOUBLE)
+            )
         )
     )
 }

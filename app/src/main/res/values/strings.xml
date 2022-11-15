@@ -8,4 +8,16 @@
     <string name="municipality_response_error">Error retrieving data</string>
     <string name="navigate_back_content_description">Navigate back</string>
     <string name="error_retrieving_locations_list">Error retrieving municipalities</string>
+    <string name="population_title">Population</string>
+    <string name="average_gross_income_title">Average gross income</string>
+
+    <!-- Variables -->
+    <string name="percentage_of_population_younger_than_18">Percentage younger than 18 years</string>
+    <string name="percentage_of_population_65_or_more">Percentage equal or older than 65</string>
+    <string name="average_population_age">Average age</string>
+    <string name="gross_income_per_person">Per person</string>
+    <string name="gross_income_per_home">Per household</string>
+    <string name="estate_count">Estate count</string>
+    <string name="buildings_count">Buildings count</string>
+    <string name="ipva_estate_annual_variation">Rental Housing Price Index</string>
 </resources>

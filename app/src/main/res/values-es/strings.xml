@@ -8,4 +8,16 @@
     <string name="municipality_response_error">Error obteniendo los datos</string>
     <string name="navigate_back_content_description">Navegar atras</string>
     <string name="error_retrieving_locations_list">Error obteniendo municipalidades</string>
+    <string name="population_title">Población</string>
+    <string name="average_gross_income_title">Renta bruta media</string>
+
+    <!-- Variables -->
+    <string name="percentage_of_population_younger_than_18">Porcentaje menor de 18 años</string>
+    <string name="percentage_of_population_65_or_more">Porcentaje mayor</string>
+    <string name="average_population_age">Edad promedio</string>
+    <string name="gross_income_per_person">Por persona</string>
+    <string name="gross_income_per_home">Por hogar</string>
+    <string name="estate_count">Cantidad de inmuebles</string>
+    <string name="buildings_count">Cantidad de edificios</string>
+    <string name="ipva_estate_annual_variation">Índice de Precios de la Vivienda en Alquiler</string>
 </resources>

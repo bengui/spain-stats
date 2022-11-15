@@ -7,7 +7,7 @@ import me.benguiman.spainstats.data.network.DataEntryDto
 import me.benguiman.spainstats.data.network.IneService
 import me.benguiman.spainstats.di.IoDispatcher
 import me.benguiman.spainstats.domain.models.*
-import me.benguiman.spainstats.ui.MunicipalityStat
+import me.benguiman.spainstats.domain.models.MunicipalityStat
 import javax.inject.Inject
 
 class MunicipalityStatsRepositoryImpl @Inject constructor(
@@ -100,8 +100,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             MunicipalityStat(
                 name = headlineCode.headline,
                 value = it.dataDto.first().value
-                    ?: throw IllegalStateException("data should not be empty"),
-                dataType = headlineCode.dataType
+                    ?: throw IllegalStateException("data should not be empty")
             )
         }
 
@@ -126,8 +125,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
                                     && it.first.headlineVariable.variableId == metadataDto.variable.id
                         }.name,
                         value = it.second.dataDto.first().value
-                            ?: throw IllegalStateException("data should not be empty"),
-                        dataType = it.first.dataType
+                            ?: throw IllegalStateException("data should not be empty")
                     )
         }
 

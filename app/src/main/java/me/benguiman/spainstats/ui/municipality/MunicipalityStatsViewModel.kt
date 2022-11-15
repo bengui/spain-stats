@@ -30,7 +30,7 @@ class MunicipalityStatsViewModel @Inject constructor(
     private val _municipalityStatUiState: MutableStateFlow<MunicipalityStatUiState> =
         MutableStateFlow(
             MunicipalityStatUiState(
-                municipalityStatList = emptyList(),
+                municipalityStatReportRowUiList = emptyList(),
                 screenStatus = ScreenLoading
             )
         )
@@ -43,7 +43,7 @@ class MunicipalityStatsViewModel @Inject constructor(
         viewModelScope.launch {
             _municipalityStatUiState.update {
                 MunicipalityStatUiState(
-                    municipalityStatList = emptyList(),
+                    municipalityStatReportRowUiList = emptyList(),
                     screenStatus = ScreenLoading
                 )
             }
@@ -55,10 +55,10 @@ class MunicipalityStatsViewModel @Inject constructor(
                 Log.d(TAG, "getMunicipalityStats $municipalityId $municipalityCode}")
                 val municipalityStatReport =
                     getDataForMunicipalityUseCase(municipalityId, municipalityCode)
-                if (municipalityStatReport.municipalityStatList.isNotEmpty()) {
+                if (municipalityStatReport.municipalityStatReportRowUiList.isNotEmpty()) {
                     _municipalityStatUiState.update {
                         MunicipalityStatUiState(
-                            municipalityStatList = municipalityStatReport.municipalityStatList,
+                            municipalityStatReportRowUiList = municipalityStatReport.municipalityStatReportRowUiList,
                             municipalityName = municipalityStatReport.municipalityName,
                             screenStatus = ScreenSuccess
                         )

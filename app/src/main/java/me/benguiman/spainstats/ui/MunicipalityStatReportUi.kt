@@ -14,10 +14,19 @@ data class MunicipalityStatUi(
     val dataType: DataType
 )
 
-sealed class ReportRowUi
+sealed class ReportRowUi(open val id: Int) {
+    companion object {
+        const val POPULATION_ROW = 100
+        const val AVERAGE_INCOME_ROW = 101
+    }
+}
 data class MultiElementRowUi(
     @StringRes val title: Int = -1,
-    val statsList: List<MunicipalityStatUi>
-) : ReportRowUi()
+    val statsList: List<MunicipalityStatUi>,
+    override val id: Int = -1
+) : ReportRowUi(id)
 
-data class SimpleRowUi(val statUi: MunicipalityStatUi) : ReportRowUi()
+data class SimpleRowUi(
+    val statUi: MunicipalityStatUi,
+    override val id: Int = -1
+) : ReportRowUi(id)

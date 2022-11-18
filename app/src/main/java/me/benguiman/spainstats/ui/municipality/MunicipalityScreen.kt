@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -13,7 +15,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -156,48 +160,135 @@ private fun MunicipalityStatsMultiElementCard(
                     modifier = Modifier.padding(8.dp)
                 )
             }
-            multiElementRowUi.statsList.forEach { statUi ->
-                Row {
-                    Text(
-                        text = stringResource(statUi.name),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
-                    Text(
-                        text = formatValue(statUi),
-                        style = MaterialTheme.typography.headlineMedium,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                if (statUi.dataType == DataType.PERCENTAGE) {
-                    val primaryColor = MaterialTheme.colorScheme.primary
-                    val secondaryColor = MaterialTheme.colorScheme.primaryContainer
-                    val percentage = remember {
-                        (statUi.value * 360 / 100).toFloat()
-                    }
-                    Row {
-                        Canvas(
-                            modifier = Modifier
-                                .size(size = 100.dp)
-                        ) {
-                            drawArc(
-                                color = primaryColor,
-                                startAngle = 0f,
-                                sweepAngle = percentage,
-                                useCenter = true
-                            )
-                            drawArc(
-                                color = secondaryColor,
-                                startAngle = percentage,
-                                sweepAngle = 360f - percentage,
-                                useCenter = true
-                            )
-                        }
-                    }
-                }
+            when (multiElementRowUi.id) {
+                ReportRowUi.POPULATION_ROW -> PopulationRow(multiElementRowUi, modifier)
+                else -> DefaultMultiElementRow(multiElementRowUi, modifier)
             }
+
         }
+    }
+}
+
+@Composable
+fun DefaultMultiElementRow(
+    multiElementRowUi: MultiElementRowUi,
+    modifier: Modifier = Modifier
+) {
+    multiElementRowUi.statsList.forEach { statUi ->
+        Row {
+            Text(
+                text = stringResource(statUi.name),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = formatValue(statUi),
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.End,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+
+}
+
+@Composable
+fun PopulationRow(
+    multiElementRowUi: MultiElementRowUi,
+    modifier: Modifier = Modifier
+) {
+    val primaryContainerColor = MaterialTheme.colorScheme.primaryContainer
+    val secondaryContainerColor = MaterialTheme.colorScheme.onSecondary
+    val colors = remember {
+        mutableListOf(
+            primaryContainerColor,
+            secondaryContainerColor
+        )
+    }
+    val colorMunicipalityMap = remember {
+        multiElementRowUi.statsList.filter {
+            it.dataType == DataType.PERCENTAGE
+        }
+            .take(2)
+            .associateBy { colors.removeFirst() }
+    }
+
+    val colorPercentageMap = remember {
+        colorMunicipalityMap.map { it.key to (it.value.value / 100 * 360).toFloat() }.toMap()
+    }
+
+    PieChart(
+        colorPercentageMap,
+        backgroundColor = MaterialTheme.colorScheme.tertiaryContainer
+    )
+    colorMunicipalityMap.forEach { entry ->
+        Row(verticalAlignment = CenterVertically) {
+            Icon(
+                imageVector = Icons.Filled.ArrowForward, tint = entry.key,
+                contentDescription = null
+            )
+            Text(
+                text = stringResource(entry.value.name),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = formatValue(entry.value),
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.End,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+
+    val intMunicipalityValues = remember {
+        multiElementRowUi.statsList.filter {
+            it.dataType != DataType.PERCENTAGE
+        }
+    }
+
+    intMunicipalityValues.forEach { municipalityUi ->
+        Row(verticalAlignment = CenterVertically) {
+            Text(
+                text = stringResource(municipalityUi.name),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = formatValue(municipalityUi),
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.End,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun PieChart(
+    colorPercentageMap: Map<Color, Float>,
+    backgroundColor: Color
+) {
+    Canvas(
+        modifier = Modifier
+            .size(size = 100.dp)
+    ) {
+        var previousAngle = 0f
+        colorPercentageMap.forEach { entry ->
+            drawArc(
+                color = entry.key,
+                startAngle = previousAngle,
+                sweepAngle = entry.value,
+                useCenter = true
+            )
+            previousAngle += entry.value
+        }
+        drawArc(
+            color = backgroundColor,
+            startAngle = previousAngle,
+            sweepAngle = 360f - previousAngle,
+            useCenter = true
+        )
     }
 }
 

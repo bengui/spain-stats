@@ -13,7 +13,7 @@
 
     <!-- Variables -->
     <string name="percentage_of_population_younger_than_18">Porcentaje menor de 18 años</string>
-    <string name="percentage_of_population_65_or_more">Porcentaje mayor</string>
+    <string name="percentage_of_population_65_or_more">Porcentaje mayor de 65 años</string>
     <string name="average_population_age">Edad promedio</string>
     <string name="gross_income_per_person">Por persona</string>
     <string name="gross_income_per_home">Por hogar</string>

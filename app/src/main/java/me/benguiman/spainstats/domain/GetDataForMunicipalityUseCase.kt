@@ -123,7 +123,8 @@ class GetDataForMunicipalityUseCase @Inject constructor(
             rowList.add(
                 MultiElementRowUi(
                     title = R.string.population_title,
-                    statsList = populationMunicipalityStatUi
+                    statsList = populationMunicipalityStatUi,
+                    id = ReportRowUi.POPULATION_ROW
                 )
             )
         }
@@ -132,7 +133,8 @@ class GetDataForMunicipalityUseCase @Inject constructor(
             rowList.add(
                 MultiElementRowUi(
                     title = R.string.average_gross_income_title,
-                    statsList = incomeMunicipalityStatUi
+                    statsList = incomeMunicipalityStatUi,
+                    id = ReportRowUi.AVERAGE_INCOME_ROW
                 )
             )
         }

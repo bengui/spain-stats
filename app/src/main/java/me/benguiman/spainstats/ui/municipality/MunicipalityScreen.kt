@@ -5,8 +5,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
@@ -17,8 +17,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -125,7 +127,7 @@ private fun MunicipalityStatsCard(
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier.padding(bottom = 8.dp)) {
-        Column(Modifier.padding(8.dp)) {
+        Row(verticalAlignment = CenterVertically, modifier = Modifier.padding(8.dp)) {
             Text(
                 text = stringResource(simpleRowUi.statUi.name),
                 style = MaterialTheme.typography.bodyMedium,
@@ -148,8 +150,9 @@ private fun MunicipalityStatsMultiElementCard(
 ) {
     Card(modifier = modifier.padding(bottom = 8.dp)) {
         Column(Modifier.padding(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = CenterVertically) {
                 Icon(
+                    //TODO Define an icon per section
                     imageVector = Icons.Outlined.Person,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
@@ -175,7 +178,7 @@ fun DefaultMultiElementRow(
     modifier: Modifier = Modifier
 ) {
     multiElementRowUi.statsList.forEach { statUi ->
-        Row {
+        Row(verticalAlignment = CenterVertically) {
             Text(
                 text = stringResource(statUi.name),
                 style = MaterialTheme.typography.bodyMedium,
@@ -217,26 +220,35 @@ fun PopulationRow(
         colorMunicipalityMap.map { it.key to (it.value.value / 100 * 360).toFloat() }.toMap()
     }
 
-    PieChart(
-        colorPercentageMap,
-        backgroundColor = MaterialTheme.colorScheme.tertiaryContainer
-    )
-    colorMunicipalityMap.forEach { entry ->
-        Row(verticalAlignment = CenterVertically) {
-            Icon(
-                imageVector = Icons.Filled.ArrowForward, tint = entry.key,
-                contentDescription = null
-            )
-            Text(
-                text = stringResource(entry.value.name),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            Text(
-                text = formatValue(entry.value),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth()
+    Row {
+        Column(
+            modifier = Modifier
+                .weight(3f)
+                .height(100.dp),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            colorMunicipalityMap.forEach { entry ->
+                Row(verticalAlignment = CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.circle),
+                        tint = entry.key,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(15.dp)
+                            .clip(CircleShape)
+                    )
+                    Text(
+                        text = stringResource(entry.value.name, entry.value.value.toInt()),
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                }
+            }
+        }
+        Column(Modifier.weight(1f)) {
+            PieChart(
+                colorPercentageMap,
+                backgroundColor = MaterialTheme.colorScheme.tertiaryContainer
             )
         }
     }
@@ -272,6 +284,7 @@ private fun PieChart(
     Canvas(
         modifier = Modifier
             .size(size = 100.dp)
+            .padding(vertical = 4.dp)
     ) {
         var previousAngle = 0f
         colorPercentageMap.forEach { entry ->
@@ -306,42 +319,68 @@ fun formatValue(municipalityStat: MunicipalityStatUi): String {
     }
 }
 
-
-@Preview
-@Composable
-fun MunicipalityStatsCardPreview() {
-    MunicipalityStatsCard(
-        SimpleRowUi(
-            MunicipalityStatUi(
-                name = R.string.average_population_age,
-                value = 45.0,
-                dataType = DataType.INTEGER
-            )
-        )
-    )
-}
-
 @Preview
 @Composable
 fun MunicipalityStatsPreview() {
     MunicipalityStats(
         "Berga", listOf(
+            MultiElementRowUi(
+                title = R.string.population_title,
+                statsList = listOf(
+                    MunicipalityStatUi(
+                        name = R.string.percentage_of_population_65_or_more,
+                        value = 23.0,
+                        dataType = DataType.PERCENTAGE
+                    ),
+                    MunicipalityStatUi(
+                        name = R.string.percentage_of_population_younger_than_18,
+                        value = 16.0,
+                        dataType = DataType.PERCENTAGE
+                    ),
+                    MunicipalityStatUi(
+                        name = R.string.average_population_age,
+                        value = 45.0,
+                        dataType = DataType.INTEGER
+                    )
+                ),
+                id = ReportRowUi.POPULATION_ROW
+            ),
+            MultiElementRowUi(
+                title = R.string.average_gross_income_title,
+                statsList = listOf(
+                    MunicipalityStatUi(
+                        name = R.string.gross_income_per_home,
+                        value = 23547.00,
+                        dataType = DataType.MONETARY
+                    ),
+                    MunicipalityStatUi(
+                        name = R.string.gross_income_per_home,
+                        value = 42631.00,
+                        dataType = DataType.MONETARY
+                    )
+                )
+            ),
+
+            SimpleRowUi(
+                MunicipalityStatUi(
+                    R.string.buildings_count,
+                    605.0,
+                    DataType.INTEGER
+                )
+            ),
+            SimpleRowUi(
+                MunicipalityStatUi(
+                    R.string.estate_count,
+                    1405.0,
+                    DataType.DOUBLE
+                )
+            ),
             SimpleRowUi(
                 MunicipalityStatUi(
                     R.string.ipva_estate_annual_variation,
                     1.9,
-                    DataType.INTEGER
+                    DataType.DOUBLE
                 )
-            ),
-            SimpleRowUi(
-                MunicipalityStatUi(
-                    R.string.buildings_count,
-                    107.605,
-                    DataType.INTEGER
-                )
-            ),
-            SimpleRowUi(
-                MunicipalityStatUi(R.string.estate_count, 0.405, DataType.DOUBLE)
             )
         )
     )

@@ -41,6 +41,7 @@ class HomeViewModel @Inject constructor(
                     MunicipalityHomeUiState(screenStatus = ScreenLoading)
                 }
 
+                //TODO Display the province name along with the municipality name in the autocomplete. Municipality (Province)
                 val provinceList = getProvincesAndMunicipalitiesUseCase()
                 val items = provinceList.fold(
                     mutableListOf<ProvinceMunicipalityListItem>()

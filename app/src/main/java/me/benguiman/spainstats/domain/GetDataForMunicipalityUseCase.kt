@@ -23,6 +23,8 @@ class GetDataForMunicipalityUseCase @Inject constructor(
     ): MunicipalityStatReportUi {
         return withContext(coroutineDispatcher) {
 
+            //TODO Obtain the population from the municipality
+
             val populationMunicipalityStatUi = mutableListOf<MunicipalityStatUi>()
             val incomeMunicipalityStatUi = mutableListOf<MunicipalityStatUi>()
             val estateDataMunicipalityStatUi = mutableListOf<MunicipalityStatUi>()

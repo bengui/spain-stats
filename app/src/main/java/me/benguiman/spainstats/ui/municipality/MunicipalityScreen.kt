@@ -31,6 +31,9 @@ import kotlinx.coroutines.launch
 import me.benguiman.spainstats.R
 import me.benguiman.spainstats.domain.models.DataType
 import me.benguiman.spainstats.ui.*
+import me.benguiman.spainstats.ui.theme.complementaryOne
+import me.benguiman.spainstats.ui.theme.complementaryTwo
+import me.benguiman.spainstats.ui.theme.md_theme_dark_background
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -159,7 +162,7 @@ private fun MunicipalityStatsMultiElementCard(
                 )
                 Text(
                     text = stringResource(multiElementRowUi.title),
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(8.dp)
                 )
             }
@@ -200,8 +203,8 @@ fun PopulationRow(
     multiElementRowUi: MultiElementRowUi,
     modifier: Modifier = Modifier
 ) {
-    val primaryContainerColor = MaterialTheme.colorScheme.primaryContainer
-    val secondaryContainerColor = MaterialTheme.colorScheme.onSecondary
+    val primaryContainerColor = complementaryOne
+    val secondaryContainerColor = complementaryTwo
     val colors = remember {
         mutableListOf(
             primaryContainerColor,
@@ -248,7 +251,7 @@ fun PopulationRow(
         Column(Modifier.weight(1f)) {
             PieChart(
                 colorPercentageMap,
-                backgroundColor = MaterialTheme.colorScheme.tertiaryContainer
+                backgroundColor = MaterialTheme.colorScheme.secondary
             )
         }
     }
@@ -319,7 +322,7 @@ fun formatValue(municipalityStat: MunicipalityStatUi): String {
     }
 }
 
-@Preview
+@Preview(showSystemUi = true)
 @Composable
 fun MunicipalityStatsPreview() {
     MunicipalityStats(

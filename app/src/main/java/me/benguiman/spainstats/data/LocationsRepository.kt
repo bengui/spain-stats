@@ -7,6 +7,8 @@ interface LocationsRepository {
     suspend fun getProvinceListPopulatedWithMunicipalities(): List<Province>
 
     suspend fun getMunicipality(municipalityId : Int) : Municipality
+
+    suspend fun getProvinceByMunicipalityId(municipalityId: Int) : Province
 }
 
 data class Municipality(

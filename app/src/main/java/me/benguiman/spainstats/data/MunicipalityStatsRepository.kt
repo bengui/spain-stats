@@ -18,4 +18,6 @@ interface MunicipalityStatsRepository {
         tableData: TableData,
         municipalityCode: String
     ): Map<HeadlineCode, MunicipalityStat>
+
+    suspend fun getPopulationForMunicipality(municipalityId: Int, provinceId: Int): Double?
 }

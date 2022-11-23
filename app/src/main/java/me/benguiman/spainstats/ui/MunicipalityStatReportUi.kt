@@ -18,6 +18,9 @@ sealed class ReportRowUi(open val id: Int) {
     companion object {
         const val POPULATION_ROW = 100
         const val AVERAGE_INCOME_ROW = 101
+        const val BUILDINGS_COUNT_ROW = 102
+        const val ESTATE_COUNT_ROW = 103
+        const val IPVA_ROW = 104
     }
 }
 data class MultiElementRowUi(

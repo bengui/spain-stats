@@ -23,12 +23,26 @@ class GetDataForMunicipalityUseCase @Inject constructor(
     ): MunicipalityStatReportUi {
         return withContext(coroutineDispatcher) {
 
-            //TODO Obtain the population from the municipality
+            val municipality = locationsRepository.getMunicipality(municipalityId)
+            val province = locationsRepository.getProvinceByMunicipalityId(municipalityId)
 
             val populationMunicipalityStatUi = mutableListOf<MunicipalityStatUi>()
             val incomeMunicipalityStatUi = mutableListOf<MunicipalityStatUi>()
             val estateDataMunicipalityStatUi = mutableListOf<MunicipalityStatUi>()
             val ipvaMunicipalityStats = mutableListOf<MunicipalityStatUi>()
+
+            municipalityStatsRepository.getPopulationForMunicipality(
+                municipalityId,
+                province.id
+            )?.let {
+                populationMunicipalityStatUi.add(
+                    MunicipalityStatUi(
+                        name = R.string.population_count,
+                        value = it,
+                        dataType = DataType.INTEGER
+                    )
+                )
+            }
 
             municipalityStatsRepository
                 .getOperationDataByMunicipalityFilteredBySeries(
@@ -42,8 +56,8 @@ class GetDataForMunicipalityUseCase @Inject constructor(
                 ).also { map ->
                     with(populationMunicipalityStatUi) {
                         addIfPresent(
-                            PercentageOfPopulationOf65OrMoreSeries,
-                            R.string.percentage_of_population_65_or_more,
+                            AveragePopulationAgeSeries,
+                            R.string.average_population_age,
                             map
                         )
                         addIfPresent(
@@ -52,8 +66,8 @@ class GetDataForMunicipalityUseCase @Inject constructor(
                             map
                         )
                         addIfPresent(
-                            AveragePopulationAgeSeries,
-                            R.string.average_population_age,
+                            PercentageOfPopulationOf65OrMoreSeries,
+                            R.string.percentage_of_population_65_or_more,
                             map
                         )
                     }
@@ -71,7 +85,6 @@ class GetDataForMunicipalityUseCase @Inject constructor(
                         )
                     }
                 }
-
 
             municipalityStatsRepository.getTableDataByMunicipality(
                 tableData = BuildingsAndRealStateTableData,
@@ -102,7 +115,7 @@ class GetDataForMunicipalityUseCase @Inject constructor(
             }
 
             MunicipalityStatReportUi(
-                municipalityName = locationsRepository.getMunicipality(municipalityId).name,
+                municipalityName = municipality.name,
                 municipalityStatReportRowUiList = generateReportRows(
                     populationMunicipalityStatUi,
                     incomeMunicipalityStatUi,
@@ -142,11 +155,16 @@ class GetDataForMunicipalityUseCase @Inject constructor(
         }
 
         estateDataMunicipalityStatUi.forEach {
-            rowList.add(SimpleRowUi(it))
+            val id = when (it.name) {
+                R.string.estate_count -> ReportRowUi.ESTATE_COUNT_ROW
+                R.string.buildings_count -> ReportRowUi.BUILDINGS_COUNT_ROW
+                else -> -1
+            }
+            rowList.add(SimpleRowUi(statUi = it, id = id))
         }
 
         ipvaMunicipalityStats.forEach {
-            rowList.add(SimpleRowUi(it))
+            rowList.add(SimpleRowUi(statUi = it, id = ReportRowUi.IPVA_ROW))
         }
 
         return rowList

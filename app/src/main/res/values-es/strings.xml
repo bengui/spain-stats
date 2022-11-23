@@ -9,12 +9,13 @@
     <string name="navigate_back_content_description">Navegar atras</string>
     <string name="error_retrieving_locations_list">Error obteniendo municipalidades</string>
     <string name="population_title">Población</string>
-    <string name="average_gross_income_title">Renta bruta media</string>
+    <string name="average_gross_income_title">Renta bruta media anual</string>
 
     <!-- Variables -->
     <string name="percentage_of_population_younger_than_18">%1$d%% menor de 18 años</string>
     <string name="percentage_of_population_65_or_more">%1$d%% mayor de 65 años</string>
     <string name="average_population_age">Edad promedio</string>
+    <string name="population_count">Habitantes</string>
     <string name="gross_income_per_person">Por persona</string>
     <string name="gross_income_per_home">Por hogar</string>
     <string name="estate_count">Cantidad de inmuebles</string>

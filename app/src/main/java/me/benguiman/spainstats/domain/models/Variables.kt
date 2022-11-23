@@ -1,5 +1,7 @@
 package me.benguiman.spainstats.domain.models
 
+import java.net.IDN
+
 interface VariableValue {
     val variableId: Int
     val value: Int
@@ -62,6 +64,22 @@ abstract class HomeSize : VariableValue {
     }
 }
 
+abstract class Sex : VariableValue {
+    override val variableId: Int = ID
+
+    companion object {
+        const val ID = 18
+    }
+}
+
+abstract class SizeOfMunicipality : VariableValue {
+    override val variableId: Int = ID
+
+    companion object {
+        const val ID = 34
+    }
+}
+
 enum class DataType {
     INTEGER, DOUBLE, PERCENTAGE, MONETARY
 }
@@ -106,4 +124,16 @@ object TotalOfHomeTypes : HomeType() {
 
 object TotalOfHomeSize : HomeSize() {
     override val value: Int = 391802
+}
+
+object SexTotal : Sex() {
+    override val value: Int = 451
+}
+
+object TotalMunicipalityPopulation : SizeOfMunicipality() {
+    override val value: Int = 8677
+}
+
+object PeopleType : DataTypeVariable() {
+    override val value: Int = 20258
 }

@@ -34,8 +34,26 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
     ): Map<HeadlineCode, MunicipalityStat> {
         return withContext(coroutineDispatcher) {
             ineService.getTableData(tableId = tableData.id)
-                .filterNameByMunicipalityId(municipalityCode)
+                .filterNameByMunicipalityCode(municipalityCode)
                 .mapToMunicipalityStatWithHeadlineCode(tableData.headlineCodes)
+        }
+    }
+
+    override suspend fun getPopulationForMunicipality(
+        municipalityId: Int,
+        provinceId: Int
+    ): Double? {
+        return provinceIdPopulationTableIdMap[provinceId]?.let { tableId ->
+            ineService.getTableData(tableId = tableId)
+                .filterByVariables(
+                    setOf(
+                        GenericVariable(MunicipalityVariable.ID, municipalityId),
+                        SexTotal,
+                        TotalMunicipalityPopulation,
+                        PeopleType
+                    )
+                )
+                .firstOrNull()?.dataDto?.firstOrNull()?.value
         }
     }
 
@@ -77,7 +95,7 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
             }
         }
 
-    private fun List<DataEntryDto>.filterNameByMunicipalityId(municipalityCode: String): List<DataEntryDto> =
+    private fun List<DataEntryDto>.filterNameByMunicipalityCode(municipalityCode: String): List<DataEntryDto> =
         this.filter { dataEntryDto ->
             dataEntryDto.metadata.any { variableValueDto ->
                 variableValueDto.variable.id == MunicipalityVariable.ID
@@ -97,11 +115,11 @@ class MunicipalityStatsRepositoryImpl @Inject constructor(
                 it.metadata.any { metadataDto -> headlineCode.headline == metadataDto.code }
             }
             headlineCode to
-            MunicipalityStat(
-                name = headlineCode.headline,
-                value = it.dataDto.first().value
-                    ?: throw IllegalStateException("data should not be empty")
-            )
+                    MunicipalityStat(
+                        name = headlineCode.headline,
+                        value = it.dataDto.first().value
+                            ?: throw IllegalStateException("data should not be empty")
+                    )
         }
 
     private fun List<DataEntryDto>.mapToDataEntryDtoWithDataSeries(series: List<DataSeries>): List<Pair<DataSeries, DataEntryDto>> =

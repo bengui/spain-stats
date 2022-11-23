@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,10 +16,12 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,7 +32,6 @@ import me.benguiman.spainstats.domain.models.DataType
 import me.benguiman.spainstats.ui.*
 import me.benguiman.spainstats.ui.theme.complementaryOne
 import me.benguiman.spainstats.ui.theme.complementaryTwo
-import me.benguiman.spainstats.ui.theme.md_theme_dark_background
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -131,16 +129,21 @@ private fun MunicipalityStatsCard(
 ) {
     Card(modifier = modifier.padding(bottom = 8.dp)) {
         Row(verticalAlignment = CenterVertically, modifier = Modifier.padding(8.dp)) {
+            RowIcon(simpleRowUi)
             Text(
                 text = stringResource(simpleRowUi.statUi.name),
                 style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier
+                    .padding(vertical = 8.dp, horizontal = 4.dp)
+                    .weight(6f)
             )
             Text(
                 text = formatValue(simpleRowUi.statUi),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(4f)
             )
         }
     }
@@ -154,12 +157,7 @@ private fun MunicipalityStatsMultiElementCard(
     Card(modifier = modifier.padding(bottom = 8.dp)) {
         Column(Modifier.padding(8.dp)) {
             Row(verticalAlignment = CenterVertically) {
-                Icon(
-                    //TODO Define an icon per section
-                    imageVector = Icons.Outlined.Person,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                RowIcon(multiElementRowUi)
                 Text(
                     text = stringResource(multiElementRowUi.title),
                     style = MaterialTheme.typography.titleMedium,
@@ -173,6 +171,31 @@ private fun MunicipalityStatsMultiElementCard(
 
         }
     }
+}
+
+@Composable
+private fun RowIcon(reportRowUi: ReportRowUi) {
+    Icon(
+        painter = getCardIconPainter(reportRowUi),
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.primary,
+        modifier = Modifier
+            .size(24.dp)
+    )
+}
+
+@Composable
+private fun getCardIconPainter(reportRowUi: ReportRowUi): Painter {
+    return painterResource(
+        id = when (reportRowUi.id) {
+            ReportRowUi.POPULATION_ROW -> R.drawable.groups
+            ReportRowUi.AVERAGE_INCOME_ROW -> R.drawable.payments
+            ReportRowUi.BUILDINGS_COUNT_ROW -> R.drawable.apartment
+            ReportRowUi.ESTATE_COUNT_ROW -> R.drawable.home
+            ReportRowUi.IPVA_ROW -> R.drawable.monitoring
+            else -> R.drawable.empty_circle
+        }
+    )
 }
 
 @Composable
@@ -203,6 +226,35 @@ fun PopulationRow(
     multiElementRowUi: MultiElementRowUi,
     modifier: Modifier = Modifier
 ) {
+    val intMunicipalityValues = remember {
+        multiElementRowUi.statsList.filter {
+            it.dataType != DataType.PERCENTAGE
+        }
+    }
+
+    intMunicipalityValues.forEach { municipalityUi ->
+        Row(verticalAlignment = CenterVertically) {
+            Text(
+                text = stringResource(municipalityUi.name),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+            Text(
+                text = formatValue(municipalityUi),
+                style = MaterialTheme.typography.headlineMedium,
+                textAlign = TextAlign.End,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+
+    Row {
+        Spacer(
+            modifier = Modifier
+                .height(8.dp)
+        )
+    }
+
     val primaryContainerColor = complementaryOne
     val secondaryContainerColor = complementaryTwo
     val colors = remember {
@@ -255,28 +307,6 @@ fun PopulationRow(
             )
         }
     }
-
-    val intMunicipalityValues = remember {
-        multiElementRowUi.statsList.filter {
-            it.dataType != DataType.PERCENTAGE
-        }
-    }
-
-    intMunicipalityValues.forEach { municipalityUi ->
-        Row(verticalAlignment = CenterVertically) {
-            Text(
-                text = stringResource(municipalityUi.name),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
-            Text(
-                text = formatValue(municipalityUi),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.End,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
 }
 
 @Composable
@@ -322,7 +352,7 @@ fun formatValue(municipalityStat: MunicipalityStatUi): String {
     }
 }
 
-@Preview(showSystemUi = true)
+@Preview(showSystemUi = true, device = Devices.NEXUS_5, locale = "ES")
 @Composable
 fun MunicipalityStatsPreview() {
     MunicipalityStats(
@@ -331,9 +361,14 @@ fun MunicipalityStatsPreview() {
                 title = R.string.population_title,
                 statsList = listOf(
                     MunicipalityStatUi(
-                        name = R.string.percentage_of_population_65_or_more,
-                        value = 23.0,
-                        dataType = DataType.PERCENTAGE
+                        name = R.string.average_population_age,
+                        value = 45.0,
+                        dataType = DataType.INTEGER
+                    ),
+                    MunicipalityStatUi(
+                        name = R.string.population_count,
+                        value = 534325.0,
+                        dataType = DataType.INTEGER
                     ),
                     MunicipalityStatUi(
                         name = R.string.percentage_of_population_younger_than_18,
@@ -341,9 +376,9 @@ fun MunicipalityStatsPreview() {
                         dataType = DataType.PERCENTAGE
                     ),
                     MunicipalityStatUi(
-                        name = R.string.average_population_age,
-                        value = 45.0,
-                        dataType = DataType.INTEGER
+                        name = R.string.percentage_of_population_65_or_more,
+                        value = 23.0,
+                        dataType = DataType.PERCENTAGE
                     )
                 ),
                 id = ReportRowUi.POPULATION_ROW
@@ -352,7 +387,7 @@ fun MunicipalityStatsPreview() {
                 title = R.string.average_gross_income_title,
                 statsList = listOf(
                     MunicipalityStatUi(
-                        name = R.string.gross_income_per_home,
+                        name = R.string.gross_income_per_person,
                         value = 23547.00,
                         dataType = DataType.MONETARY
                     ),
@@ -365,25 +400,28 @@ fun MunicipalityStatsPreview() {
             ),
 
             SimpleRowUi(
-                MunicipalityStatUi(
+                statUi = MunicipalityStatUi(
                     R.string.buildings_count,
                     605.0,
                     DataType.INTEGER
-                )
+                ),
+                id = ReportRowUi.BUILDINGS_COUNT_ROW
             ),
             SimpleRowUi(
-                MunicipalityStatUi(
+                statUi = MunicipalityStatUi(
                     R.string.estate_count,
                     1405.0,
                     DataType.DOUBLE
-                )
+                ),
+                id = ReportRowUi.ESTATE_COUNT_ROW
             ),
             SimpleRowUi(
-                MunicipalityStatUi(
+                statUi = MunicipalityStatUi(
                     R.string.ipva_estate_annual_variation,
-                    1.9,
+                    0.9,
                     DataType.DOUBLE
-                )
+                ),
+                id = ReportRowUi.IPVA_ROW
             )
         )
     )

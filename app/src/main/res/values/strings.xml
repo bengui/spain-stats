@@ -15,6 +15,7 @@
     <string name="percentage_of_population_younger_than_18">%1$d%% younger than 18 years</string>
     <string name="percentage_of_population_65_or_more">%1$d%% equal or older than 65</string>
     <string name="average_population_age">Average age</string>
+    <string name="population_count">People</string>
     <string name="gross_income_per_person">Per person</string>
     <string name="gross_income_per_home">Per household</string>
     <string name="estate_count">Estate count</string>

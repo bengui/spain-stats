@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.benguiman.spainstats.data.Municipality
+import me.benguiman.spainstats.data.Province
 import me.benguiman.spainstats.domain.GetProvincesAndMunicipalitiesUseCase
+import me.benguiman.spainstats.ui.MunicipalityStatUi
 import me.benguiman.spainstats.ui.ScreenError
 import me.benguiman.spainstats.ui.ScreenLoading
 import me.benguiman.spainstats.ui.ScreenSuccess
@@ -58,15 +60,9 @@ class HomeViewModel @Inject constructor(
                 }
 
                 val municipalityList =
-                    provinceList.fold(mutableListOf<Municipality>()) { list, province ->
-                        list.addAll(province.municipalityList)
+                    provinceList.fold(mutableListOf<MunicipalityUiState>()) { list, province ->
+                        list.addAll(provinceToMunicipalityHomeUiStateList(province))
                         list
-                    }.map {
-                        MunicipalityUiState(
-                            id = it.id,
-                            name = it.name,
-                            code = it.code
-                        )
                     }.sortedBy { it.name }
 
                 _municipalityHomeUiState.update {
@@ -82,6 +78,20 @@ class HomeViewModel @Inject constructor(
                     MunicipalityHomeUiState(screenStatus = ScreenError)
                 }
             }
+        }
+    }
+
+    private fun provinceToMunicipalityHomeUiStateList(province: Province): List<MunicipalityUiState> {
+        return province.municipalityList.fold(mutableListOf()) { list, municipality ->
+            list.add(
+                MunicipalityUiState(
+                    id = municipality.id,
+                    name = municipality.name,
+                    code = municipality.code,
+                    provinceName = province.name
+                )
+            )
+            list
         }
     }
 }

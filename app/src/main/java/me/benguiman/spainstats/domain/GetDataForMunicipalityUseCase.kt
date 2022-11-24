@@ -8,7 +8,6 @@ import me.benguiman.spainstats.data.LocationsRepository
 import me.benguiman.spainstats.data.MunicipalityStatsRepository
 import me.benguiman.spainstats.di.MainDispatcher
 import me.benguiman.spainstats.domain.models.*
-import me.benguiman.spainstats.domain.models.MunicipalityStat
 import me.benguiman.spainstats.ui.*
 import javax.inject.Inject
 
@@ -116,6 +115,7 @@ class GetDataForMunicipalityUseCase @Inject constructor(
 
             MunicipalityStatReportUi(
                 municipalityName = municipality.name,
+                provinceName = province.name,
                 municipalityStatReportRowUiList = generateReportRows(
                     populationMunicipalityStatUi,
                     incomeMunicipalityStatUi,

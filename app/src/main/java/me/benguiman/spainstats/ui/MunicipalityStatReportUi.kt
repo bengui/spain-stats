@@ -5,6 +5,7 @@ import me.benguiman.spainstats.domain.models.DataType
 
 data class MunicipalityStatReportUi(
     val municipalityName: String,
+    val provinceName: String,
     val municipalityStatReportRowUiList: List<ReportRowUi>
 )
 

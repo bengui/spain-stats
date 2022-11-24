@@ -3,6 +3,9 @@ package me.benguiman.spainstats.ui.home
 import java.text.Normalizer
 
 class MunicipalityAutocompleteState(private val municipalityList: List<MunicipalityUiState>) {
+    companion object {
+        const val MAX_RESULTS = 8
+    }
     fun filterMunicipalityList(selectedOptionText: String) : List<MunicipalityUiState> {
         if (selectedOptionText.isEmpty()) {
             return emptyList()
@@ -16,7 +19,7 @@ class MunicipalityAutocompleteState(private val municipalityList: List<Municipal
                     .startsWith(
                         selectedOptionText.removeAccents(), ignoreCase = true
                     )
-            }.take(4)
+            }.take(MAX_RESULTS - 2)
         )
         resultList.addAll(
             municipalityList
@@ -27,7 +30,7 @@ class MunicipalityAutocompleteState(private val municipalityList: List<Municipal
                         .contains(
                             selectedOptionText.removeAccents(), ignoreCase = true
                         )
-                }.take(6 - resultList.size)
+                }.take(MAX_RESULTS - resultList.size)
         )
         return resultList.toList()
     }

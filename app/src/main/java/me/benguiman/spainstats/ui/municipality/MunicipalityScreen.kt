@@ -59,6 +59,7 @@ fun MunicipalityScreen(
             ScreenError -> processError(municipalityStatUiState, showSnackBar, scope, viewModel)
             ScreenSuccess -> MunicipalityStats(
                 municipalityName = municipalityStatUiState.municipalityName,
+                provinceName = municipalityStatUiState.provinceName,
                 municipalityStatList = municipalityStatUiState.municipalityStatReportRowUiList,
                 modifier = modifier
             )
@@ -104,13 +105,18 @@ private fun processError(
 @Composable
 fun MunicipalityStats(
     municipalityName: String = "",
+    provinceName: String = "",
     municipalityStatList: List<ReportRowUi> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     Text(
         text = municipalityName,
-        style = MaterialTheme.typography.headlineMedium,
-        modifier = modifier.padding(vertical = 8.dp)
+        style = MaterialTheme.typography.headlineMedium
+    )
+    Text(
+        text = provinceName,
+        style = MaterialTheme.typography.bodyMedium,
+        modifier = modifier.padding(bottom = 4.dp)
     )
     LazyColumn {
         items(municipalityStatList) { reportRowUi ->
@@ -356,7 +362,9 @@ fun formatValue(municipalityStat: MunicipalityStatUi): String {
 @Composable
 fun MunicipalityStatsPreview() {
     MunicipalityStats(
-        "Berga", listOf(
+        municipalityName = "Málaga",
+        provinceName = "Málaga",
+        listOf(
             MultiElementRowUi(
                 title = R.string.population_title,
                 statsList = listOf(

@@ -60,6 +60,7 @@ class MunicipalityStatsViewModel @Inject constructor(
                         MunicipalityStatUiState(
                             municipalityStatReportRowUiList = municipalityStatReport.municipalityStatReportRowUiList,
                             municipalityName = municipalityStatReport.municipalityName,
+                            provinceName = municipalityStatReport.provinceName,
                             screenStatus = ScreenSuccess
                         )
                     }

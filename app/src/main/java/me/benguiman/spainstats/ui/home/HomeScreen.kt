@@ -38,7 +38,7 @@ fun HomeScreen(
     ) {
         when (municipalityStatsUiState.screenStatus) {
             ScreenLoading -> SpainStatsCircularProgressIndicator(modifier)
-            ScreenError -> processError(showSnackBar, scope, viewModel)
+            ScreenError -> LaunchErrorSnackBar(showSnackBar, scope, viewModel)
             ScreenSuccess -> MunicipalityAutocompleteField(
                 onMunicipalitySelected = onMunicipalityClickListener,
                 municipalityHomeUiState = municipalityStatsUiState,
@@ -49,7 +49,7 @@ fun HomeScreen(
 }
 
 @Composable
-private fun processError(
+private fun LaunchErrorSnackBar(
     showSnackBar: (StatsSnackbarData) -> Unit,
     scope: CoroutineScope,
     viewModel: HomeViewModel
@@ -117,9 +117,10 @@ fun MunicipalityAutocompleteField(
         key1 = selectedOptionText,
         initialValue = emptyList()
     ) {
-        value = municipalityAutocompleteState.filterMunicipalityList(selectedOptionText).also {
-            expanded = true
-        }
+        value =
+            municipalityAutocompleteState.filterMunicipalityList(selectedOptionText.trim()).also {
+                expanded = true
+            }
     }
 
     ExposedDropdownMenuBox(
@@ -157,7 +158,7 @@ fun MunicipalityAutocompleteField(
             ) {
                 municipalityList.forEach { municipality ->
                     DropdownMenuItem(
-                        text = { Text(municipality.name) },
+                        text = { Text(municipality.name + " (" + municipality.provinceName + ")") },
                         onClick = {
                             onMunicipalitySelected(municipality)
                         },

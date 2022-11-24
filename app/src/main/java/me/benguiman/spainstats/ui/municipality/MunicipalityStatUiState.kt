@@ -9,6 +9,7 @@ object ResponseError : MunicipalityError()
 
 data class MunicipalityStatUiState(
     val municipalityName: String = "",
+    val provinceName: String = "",
     val municipalityStatReportRowUiList: List<ReportRowUi> = emptyList(),
     val screenStatus: ScreenStatus,
     val error: MunicipalityError? = null

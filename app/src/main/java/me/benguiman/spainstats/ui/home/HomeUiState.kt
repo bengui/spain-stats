@@ -5,7 +5,7 @@ import me.benguiman.spainstats.ui.ScreenStatus
 data class MunicipalityHomeUiState(
     val provinceMunicipalityList: List<ProvinceMunicipalityListItem> = emptyList(),
     val municipalityList: List<MunicipalityUiState> = emptyList(),
-    val screenStatus : ScreenStatus
+    val screenStatus: ScreenStatus
 )
 
 data class ProvinceMunicipalityListItem(
@@ -18,7 +18,8 @@ data class ProvinceMunicipalityListItem(
 data class MunicipalityUiState(
     val id: Int,
     val name: String,
-    val code: String
+    val code: String,
+    val provinceName: String
 )
 
 data class ListItem(

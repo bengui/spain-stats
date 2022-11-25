@@ -1,8 +1,9 @@
 <resources>
-    <string name="app_name">Spain Stats</string>
+    <string name="app_name">ES Stats</string>
     <string name="home_title">Estadísticas España</string>
     <string name="municipality_title">Municipalidad</string>
     <string name="loading_data">Cargando datos…</string>
+    <string name="loading_places_data">Cargando lista de municipalidades…</string>
     <string name="retry_button">Reintentar</string>
     <string name="municipality_no_data_error">No hay datos para la municipalidad</string>
     <string name="municipality_response_error">Error obteniendo los datos</string>
@@ -10,6 +11,7 @@
     <string name="error_retrieving_locations_list">Error obteniendo municipalidades</string>
     <string name="population_title">Población</string>
     <string name="average_gross_income_title">Renta bruta media anual</string>
+    <string name="home_screen_search_title">Search:</string>
 
     <!-- Variables -->
     <string name="percentage_of_population_younger_than_18">%1$d%% menor de 18 años</string>

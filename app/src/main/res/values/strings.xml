@@ -3,13 +3,15 @@
     <string name="home_title">Spain Stats</string>
     <string name="municipality_title">Municipality</string>
     <string name="loading_data">Loading data…</string>
+    <string name="loading_places_data">Loading municipalities list…</string>
     <string name="retry_button">Retry</string>
     <string name="municipality_no_data_error">There is no data available for the given municipality</string>
     <string name="municipality_response_error">Error retrieving data</string>
     <string name="navigate_back_content_description">Navigate back</string>
     <string name="error_retrieving_locations_list">Error retrieving municipalities</string>
     <string name="population_title">Population</string>
-    <string name="average_gross_income_title">Average gross income</string>
+    <string name="average_gross_income_title">Average annual gross income</string>
+    <string name="home_screen_search_title">Search:</string>
 
     <!-- Variables -->
     <string name="percentage_of_population_younger_than_18">%1$d%% younger than 18 years</string>

@@ -10,36 +10,57 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.benguiman.spainstats.R
 import me.benguiman.spainstats.ui.*
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     showSnackBar: (StatsSnackbarData) -> Unit,
     onMunicipalityClickListener: (MunicipalityUiState) -> Unit = {},
-    viewModel: HomeViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val municipalityStatsUiState by viewModel.municipalityHomeUiState.collectAsState()
-    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         viewModel.getProvincesAndMunicipalities()
     }
+    val onErrorAction = { viewModel.getProvincesAndMunicipalities() }
+    HomeScreenBody(
+        modifier,
+        municipalityStatsUiState,
+        showSnackBar,
+        onErrorAction,
+        onMunicipalityClickListener
+    )
+}
+
+@Composable
+private fun HomeScreenBody(
+    modifier: Modifier = Modifier,
+    municipalityStatsUiState: MunicipalityHomeUiState,
+    showSnackBar: (StatsSnackbarData) -> Unit = {},
+    onErrorAction: () -> Unit = {},
+    onMunicipalityClickListener: (MunicipalityUiState) -> Unit = {}
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxSize()
     ) {
         when (municipalityStatsUiState.screenStatus) {
-            ScreenLoading -> SpainStatsCircularProgressIndicator(modifier)
-            ScreenError -> LaunchErrorSnackBar(showSnackBar, scope, viewModel)
-            ScreenSuccess -> MunicipalityAutocompleteField(
+            ScreenLoading -> SpainStatsCircularProgressIndicator(
+                modifier,
+                stringResource(id = R.string.loading_places_data)
+            )
+            ScreenError -> LaunchErrorSnackBar(showSnackBar, onErrorAction)
+            ScreenSuccess -> MunicipalitySearchScreen(
                 onMunicipalitySelected = onMunicipalityClickListener,
                 municipalityHomeUiState = municipalityStatsUiState,
                 modifier = modifier.padding(8.dp)
@@ -51,10 +72,10 @@ fun HomeScreen(
 @Composable
 private fun LaunchErrorSnackBar(
     showSnackBar: (StatsSnackbarData) -> Unit,
-    scope: CoroutineScope,
-    viewModel: HomeViewModel
+    onErrorAction: () -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         showSnackBar(
             StatsSnackbarData(
@@ -64,7 +85,7 @@ private fun LaunchErrorSnackBar(
                 isError = true,
                 onAction = {
                     scope.launch {
-                        viewModel.getProvincesAndMunicipalities()
+                        onErrorAction()
                     }
                 }
             )
@@ -73,47 +94,48 @@ private fun LaunchErrorSnackBar(
 }
 
 @Composable
-fun ProvinceMunicipalityList(
-    provinceMunicipalityList: List<ProvinceMunicipalityListItem>,
-    onMunicipalityClickListener: (Int, String) -> Unit = { _: Int, _: String -> },
-    modifier: Modifier = Modifier
+fun MunicipalitySearchScreen(
+    modifier: Modifier = Modifier,
+    onMunicipalitySelected: (MunicipalityUiState) -> Unit = {},
+    municipalityHomeUiState: MunicipalityHomeUiState
 ) {
-    LazyColumn(modifier = modifier) {
-        items(provinceMunicipalityList) {
-            if (it.title) {
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            if (it.title) {
-                Text(
-                    text = it.name,
-                    style = MaterialTheme.typography.titleLarge
-                )
-            } else {
-                TextButton(onClick = {
-                    onMunicipalityClickListener(it.id, it.code)
-                }) {
-                    Text(it.name)
-                }
-            }
-        }
+    Row {
+        MunicipalityAutocompleteSearchField(
+            municipalityHomeUiState,
+            onMunicipalitySelected,
+            modifier
+        )
+    }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .padding(bottom = 96.dp)
+            .fillMaxHeight()
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.home_work),
+            tint = MaterialTheme.colorScheme.surfaceVariant,
+            contentDescription = null,
+            modifier = Modifier.size(192.dp)
+        )
     }
 }
 
 /**
  * https://github.com/androidx/androidx/blob/bea0ae031bd927b686fafd70c6f448b7c48da23d/compose/material3/material3/samples/src/main/java/androidx/compose/material3/samples/ExposedDropdownMenuSamples.kt
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MunicipalityAutocompleteField(
-    onMunicipalitySelected: (MunicipalityUiState) -> Unit = {},
+@OptIn(ExperimentalMaterial3Api::class)
+private fun MunicipalityAutocompleteSearchField(
     municipalityHomeUiState: MunicipalityHomeUiState,
-    modifier: Modifier = Modifier
+    onMunicipalitySelected: (MunicipalityUiState) -> Unit = {},
+    modifier: Modifier
 ) {
     var expanded by remember { mutableStateOf(true) }
     val municipalityAutocompleteState =
         remember { MunicipalityAutocompleteState(municipalityHomeUiState.municipalityList) }
     var selectedOptionText by remember { mutableStateOf("") }
-    val municipalityList by produceState<List<MunicipalityUiState>>(
+    val municipalityList by produceState(
         key1 = selectedOptionText,
         initialValue = emptyList()
     ) {
@@ -169,4 +191,10 @@ fun MunicipalityAutocompleteField(
         }
 
     }
+}
+
+@Preview
+@Composable
+fun MunicipalitySearchScreenPreview() {
+    HomeScreenBody(municipalityStatsUiState = MunicipalityHomeUiState(screenStatus = ScreenSuccess))
 }

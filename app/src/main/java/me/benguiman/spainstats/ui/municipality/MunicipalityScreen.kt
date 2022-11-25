@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import formatValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import me.benguiman.spainstats.R
@@ -55,7 +56,10 @@ fun MunicipalityScreen(
             .padding(horizontal = 8.dp)
     ) {
         when (municipalityStatUiState.screenStatus) {
-            ScreenLoading -> SpainStatsCircularProgressIndicator(modifier)
+            ScreenLoading -> SpainStatsCircularProgressIndicator(
+                modifier,
+                stringResource(id = R.string.loading_data)
+            )
             ScreenError -> processError(municipalityStatUiState, showSnackBar, scope, viewModel)
             ScreenSuccess -> MunicipalityStats(
                 municipalityName = municipalityStatUiState.municipalityName,
@@ -341,20 +345,6 @@ private fun PieChart(
             sweepAngle = 360f - previousAngle,
             useCenter = true
         )
-    }
-}
-
-fun formatValue(municipalityStat: MunicipalityStatUi): String {
-    val spainLocale = Locale("es", "ES")
-    val numberFormat = NumberFormat.getInstance(spainLocale)
-    val currencyFormat = NumberFormat.getCurrencyInstance(spainLocale)
-    currencyFormat.maximumFractionDigits = 0
-    val percentageFormat = NumberFormat.getPercentInstance()
-    return when (municipalityStat.dataType) {
-        DataType.INTEGER -> numberFormat.format(municipalityStat.value.roundToInt())
-        DataType.DOUBLE -> numberFormat.format(municipalityStat.value)
-        DataType.MONETARY -> currencyFormat.format((municipalityStat.value.toInt()))
-        DataType.PERCENTAGE -> percentageFormat.format(municipalityStat.value / 100)
     }
 }
 

@@ -31,6 +31,8 @@ import me.benguiman.spainstats.ui.StatsSnackbarHost
 import me.benguiman.spainstats.ui.showSnackBar
 import me.benguiman.spainstats.ui.theme.SpainStatsTheme
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.text.style.TextAlign
 
 
 @AndroidEntryPoint
@@ -88,12 +90,13 @@ fun SpainStatsTopBar(
     onBackPressed: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    SmallTopAppBar(
+    TopAppBar(
         title = {
             Text(
                 title,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(start = 12.dp)
             )
         },
         navigationIcon =

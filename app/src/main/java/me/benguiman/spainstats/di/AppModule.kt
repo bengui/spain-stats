@@ -31,7 +31,7 @@ object AppModule {
     ): IneService {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
-        val maxSize: Long = 50 * 1024 * 1024
+        val maxSize: Long = 60 * 1024 * 1024
         val cache = Cache(context.cacheDir, maxSize)
         val client: OkHttpClient = OkHttpClient.Builder()
             .cache(cache)

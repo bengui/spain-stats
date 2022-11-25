@@ -14,7 +14,10 @@ import androidx.compose.ui.unit.dp
 import me.benguiman.spainstats.R
 
 @Composable
-fun SpainStatsCircularProgressIndicator(modifier: Modifier) {
+fun SpainStatsCircularProgressIndicator(
+    modifier: Modifier = Modifier,
+    message: String
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxHeight()
@@ -22,7 +25,7 @@ fun SpainStatsCircularProgressIndicator(modifier: Modifier) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CircularProgressIndicator()
             Text(
-                stringResource(id = R.string.loading_data),
+                message,
                 modifier = modifier.padding(16.dp)
             )
         }

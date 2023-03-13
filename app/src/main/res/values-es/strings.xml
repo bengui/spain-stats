@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ES Stats</string>
+    <string name="app_name">Spain Stats</string>
     <string name="home_title">Estadísticas España</string>
     <string name="municipality_title">Municipalidad</string>
     <string name="loading_data">Cargando datos…</string>
@@ -12,6 +12,7 @@
     <string name="population_title">Población</string>
     <string name="average_gross_income_title">Renta bruta media anual</string>
     <string name="home_screen_search_title">Search:</string>
+    <string name="municipality_details_footer">Fuente de datos ine.es</string>
 
     <!-- Variables -->
     <string name="percentage_of_population_younger_than_18">%1$d%% menor de 18 años</string>

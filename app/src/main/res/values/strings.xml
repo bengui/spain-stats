@@ -12,6 +12,7 @@
     <string name="population_title">Population</string>
     <string name="average_gross_income_title">Average annual gross income</string>
     <string name="home_screen_search_title">Search:</string>
+    <string name="municipality_details_footer">Data source ine.es</string>
 
     <!-- Variables -->
     <string name="percentage_of_population_younger_than_18">%1$d%% younger than 18 years</string>

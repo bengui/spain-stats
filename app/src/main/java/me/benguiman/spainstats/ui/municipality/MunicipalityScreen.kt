@@ -129,6 +129,19 @@ fun MunicipalityStats(
                 is SimpleRowUi -> MunicipalityStatsCard(reportRowUi)
             }
         }
+        item {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.municipality_details_footer),
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                )
+            }
+        }
     }
 }
 

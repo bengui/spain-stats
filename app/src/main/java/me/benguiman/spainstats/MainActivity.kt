@@ -33,12 +33,14 @@ import me.benguiman.spainstats.ui.theme.SpainStatsTheme
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.text.style.TextAlign
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         setContent {
             StatsApp()
         }
